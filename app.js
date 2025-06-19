@@ -6,9 +6,19 @@ const usersRouter = require('./routes/usersRouter');
 const coursesRouter = require('./routes/coursesRouter');
 const attendancesRouter = require('./routes/attendancesRouter');
 const classSessionsRouter = require('./routes/classSessionsRouter');
-
+const indexRouter = require('./routes/index');
 const path = require('path');
+const session = require('express-session');
+const flash = require('connect-flash');
 
+
+require('dotenv').config();
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+}));
+app.use(flash());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -19,10 +29,7 @@ app.use('/users', usersRouter);
 app.use('/courses', coursesRouter);
 app.use('/attendances', attendancesRouter);
 app.use('/classSessions', classSessionsRouter);
-
-app.get('/', (req, res) => {
-    res.send('Hello World');
-});
+app.use('/', indexRouter);
 
 
 app.listen(3000,()=>{

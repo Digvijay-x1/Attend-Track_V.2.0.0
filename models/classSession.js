@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 
 
-const ClassSessionSchema = new mongoose.Schema({
+const ClassSessionSchema = mongoose.Schema({
     course:     { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
     date:       { type: Date, required: true },                 // Full date of the session (e.g., 2025-06-24)
     // startTime:  { type: String, required: true },               // "10:00" (24h format)

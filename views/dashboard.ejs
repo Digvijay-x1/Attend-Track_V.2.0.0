@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ninja Academy Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Anton&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: linear-gradient(45deg, #f5f5f5 25%, transparent 25%),
+                        linear-gradient(-45deg, #f5f5f5 25%, transparent 25%),
+                        linear-gradient(45deg, transparent 75%, #f5f5f5 75%),
+                        linear-gradient(-45deg, transparent 75%, #f5f5f5 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Manga panel container */
+        .manga-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Header with manga title styling */
+        .header-panel {
+            background: #000;
+            color: #fff;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 8px solid #000;
+            position: relative;
+            overflow: hidden;
+            transform: rotate(-1deg);
+        }
+
+        .header-panel::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 2px,
+                rgba(255,255,255,0.1) 2px,
+                rgba(255,255,255,0.1) 4px
+            );
+            animation: speedLines 3s linear infinite;
+        }
+
+        @keyframes speedLines {
+            0% { transform: translateX(-100px) translateY(-100px); }
+            100% { transform: translateX(100px) translateY(100px); }
+        }
+
+        .header-title {
+            font-family: 'Bangers', cursive;
+            font-size: 4rem;
+            text-shadow: 4px 4px 0px #ff0000, 8px 8px 0px #000;
+            position: relative;
+            z-index: 2;
+            letter-spacing: 0.1em;
+        }
+
+        .header-subtitle {
+            font-size: 1.2rem;
+            margin-top: 10px;
+            position: relative;
+            z-index: 2;
+            font-weight: 700;
+        }
+
+        /* Avatar character panel */
+        .character-panel {
+            position: fixed;
+            top: 120px;
+            right: 30px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, #ff8c42, #ff6b1a);
+            border-radius: 50%;
+            border: 8px solid #000;
+            box-shadow: 0 0 0 4px #fff, 0 0 0 8px #000;
+            z-index: 10;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .character-avatar {
+            width: 100%;
+            height: 100%;
+            background: #f4d1ae;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .character-avatar::before {
+            content: '💥';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 2rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* Main dashboard grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        /* Manga panel styling for cards */
+        .manga-panel {
+            background: #fff;
+            border: 6px solid #000;
+            padding: 25px;
+            position: relative;
+            box-shadow: 8px 8px 0px #000;
+            transition: all 0.3s ease;
+        }
+
+        .manga-panel:hover {
+            transform: translateY(-5px) rotate(1deg);
+            box-shadow: 12px 12px 0px #000;
+            animation: panelShake 0.5s ease-in-out;
+        }
+
+        @keyframes panelShake {
+            0%, 100% { transform: translateY(-5px) rotate(1deg); }
+            25% { transform: translateY(-7px) rotate(0.5deg); }
+            75% { transform: translateY(-3px) rotate(1.5deg); }
+        }
+
+        /* SFX typography */
+        .sfx-label {
+            font-family: 'Bangers', cursive;
+            position: absolute;
+            top: -15px;
+            left: -10px;
+            background: #ff0000;
+            color: #fff;
+            padding: 5px 15px;
+            border: 3px solid #000;
+            transform: rotate(-5deg);
+            font-size: 1.2rem;
+            z-index: 5;
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        /* Stat numbers with manga emphasis */
+        .stat-number {
+            font-family: 'Anton', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #000;
+            text-shadow: 3px 3px 0px #fff, 6px 6px 0px #ff0000;
+            margin: 10px 0;
+            position: relative;
+        }
+
+        .stat-number.blue { color: #0066ff; }
+        .stat-number.green { color: #00cc44; }
+        .stat-number.red { color: #ff0000; }
+
+        /* Halftone background effect */
+        .halftone-bg {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #000 20%, transparent 20%),
+                        radial-gradient(circle, #000 20%, transparent 20%);
+            background-size: 15px 15px;
+            background-position: 0 0, 7.5px 7.5px;
+            opacity: 0.1;
+        }
+
+        /* Progress bars with manga style */
+        .progress-container {
+            background: #000;
+            height: 15px;
+            border: 3px solid #000;
+            margin: 15px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(45deg, #ff0000, #ff6600);
+            transition: width 1s ease-in-out;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 3px,
+                rgba(255,255,255,0.3) 3px,
+                rgba(255,255,255,0.3) 6px
+            );
+        }
+
+        /* Chart container with comic panel effect */
+        .chart-panel {
+            grid-column: 1 / -1;
+            background: #fff;
+            border: 8px solid #000;
+            padding: 30px;
+            position: relative;
+            margin-top: 20px;
+        }
+
+        .chart-panel::before {
+            content: 'データ分析！';
+            position: absolute;
+            top: -20px;
+            right: 20px;
+            background: #0066ff;
+            color: #fff;
+            padding: 8px 20px;
+            border: 4px solid #000;
+            font-family: 'Bangers', cursive;
+            font-size: 1.5rem;
+            transform: rotate(5deg);
+        }
+
+        /* Attention effects */
+        .needs-attention {
+            animation: attentionPulse 2s infinite;
+        }
+
+        @keyframes attentionPulse {
+            0%, 100% { background-color: #fff; }
+            50% { background-color: #ffe6e6; }
+        }
+
+        /* Speed line effects */
+        .speed-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .speed-lines::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                #000 2px,
+                #000 3px
+            );
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .manga-panel:hover .speed-lines::before {
+            opacity: 0.1;
+            animation: speedLineRotate 1s linear infinite;
+        }
+
+        @keyframes speedLineRotate {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Typography effects */
+        .manga-text {
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .emphasis-text {
+            font-family: 'Bangers', cursive;
+            font-size: 1.4rem;
+            color: #ff0000;
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .character-panel {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin: 0 auto 30px;
+            }
+            
+            .header-title {
+                font-size: 2.5rem;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Subject donut chart styling */
+        .donut-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 300px;
+            position: relative;
+        }
+
+        .donut-chart {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: conic-gradient(
+                #00cc44 0deg 126deg,
+                #0066ff 126deg 216deg,
+                #ff0000 216deg 288deg,
+                #ff6600 288deg 324deg,
+                #9966ff 324deg 360deg
+            );
+            border: 6px solid #000;
+            position: relative;
+        }
+
+        .donut-chart::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 60%;
+            height: 60%;
+            background: #fff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            border: 3px solid #000;
+        }
+
+        .legend {
+            position: absolute;
+            right: -150px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #000;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="manga-container">
+        <!-- Header Panel -->
+        <div class="header-panel">
+            <h1 class="header-title">NINJA ACADEMY</h1>
+            <p class="header-subtitle">&gt;&gt; Track your jutsu mastery across all subjects and stay on top of your ninja goals!</p>
+        </div>
+
+        <!-- Character Avatar -->
+        <div class="character-panel">
+            <div class="character-avatar"></div>
+        </div>
+
+        <!-- Main Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Overall Attendance -->
+            <div class="manga-panel">
+                <div class="sfx-label">POW!</div>
+                <div class="halftone-bg"></div>
+                <div class="speed-lines"></div>
+                <p class="manga-text">Overall Attendance</p>
+                <div class="stat-number blue">82.5%</div>
+                <p class="emphasis-text">+2.1% from last week</p>
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: 82.5%"></div>
+                </div>
+            </div>
+
+            <!-- Total Classes -->
+            <div class="manga-panel">
+                <div class="sfx-label">ZOOM!</div>
+                <div class="halftone-bg"></div>
+                <div class="speed-lines"></div>
+                <p class="manga-text">Total Classes</p>
+                <div class="stat-number">156</div>
+                <p class="emphasis-text">128 attended</p>
+            </div>
+
+            <!-- Below 75% Warning -->
+            <div class="manga-panel needs-attention">
+                <div class="sfx-label">ZAP!</div>
+                <div class="halftone-bg"></div>
+                <div class="speed-lines"></div>
+                <p class="manga-text">Below 75%</p>
+                <div class="stat-number red">2</div>
+                <p class="emphasis-text">Needs attention</p>
+            </div>
+
+            <!-- This Week -->
+            <div class="manga-panel">
+                <div class="sfx-label">BOOM!</div>
+                <div class="halftone-bg"></div>
+                <div class="speed-lines"></div>
+                <p class="manga-text">This Week</p>
+                <div class="stat-number green">18/20</div>
+                <p class="emphasis-text">90% attendance</p>
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: 90%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Panel -->
+        <div class="chart-panel">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+                <!-- Attendance Trend -->
+                <div>
+                    <h3 class="manga-text" style="font-size: 1.5rem; margin-bottom: 20px;">Attendance Trend</h3>
+                    <svg width="100%" height="300" viewBox="0 0 500 200" style="border: 3px solid #000; background: #f9f9f9;">
+                        <defs>
+                            <pattern id="grid" width="50" height="20" patternUnits="userSpaceOnUse">
+                                <path d="M 50 0 L 0 0 0 20" fill="none" stroke="#ddd" stroke-width="1"/>
+                            </pattern>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#grid)" />
+                        
+                        <!-- Trend line -->
+                        <polyline points="50,120 100,100 150,110 200,90 250,95 300,85 350,90 400,85 450,85" 
+                                 fill="none" stroke="#0066ff" stroke-width="6"/>
+                        
+                        <!-- Data points -->
+                        <circle cx="50" cy="120" r="8" fill="#0066ff" stroke="#000" stroke-width="3"/>
+                        <circle cx="100" cy="100" r="8" fill="#0066ff" stroke="#000" stroke-width="3"/>
+                        <circle cx="150" cy="110" r="8" fill="#0066ff" stroke="#000" stroke-width="3"/>
+                        <circle cx="200" cy="90" r="8" fill="#0066ff" stroke="#000" stroke-width="3"/>
+                        <circle cx="250" cy="95" r="8" fill="#0066ff" stroke="#000" stroke-width="3"/>
+                        <circle cx="300" cy="85" r="8" fill="#0066ff" stroke="#000" stroke-width="3"/>
+                        <circle cx="350" cy="90" r="8" fill="#0066ff" stroke="#000" stroke-width="3"/>
+                        <circle cx="400" cy="85" r="8" fill="#0066ff" stroke="#000" stroke-width="3"/>
+                        <circle cx="450" cy="85" r="8" fill="#0066ff" stroke="#000" stroke-width="3"/>
+                        
+                        <!-- Labels -->
+                        <text x="50" y="190" text-anchor="middle" font-family="Noto Sans JP" font-weight="700" font-size="12">Week 1</text>
+                        <text x="150" y="190" text-anchor="middle" font-family="Noto Sans JP" font-weight="700" font-size="12">Week 3</text>
+                        <text x="250" y="190" text-anchor="middle" font-family="Noto Sans JP" font-weight="700" font-size="12">Week 5</text>
+                        <text x="350" y="190" text-anchor="middle" font-family="Noto Sans JP" font-weight="700" font-size="12">Week 7</text>
+                        <text x="450" y="190" text-anchor="middle" font-family="Noto Sans JP" font-weight="700" font-size="12">Week 9</text>
+                    </svg>
+                </div>
+
+                <!-- Subject-wise Attendance -->
+                <div>
+                    <h3 class="manga-text" style="font-size: 1.5rem; margin-bottom: 20px;">Subject-wise Attendance</h3>
+                    <div class="donut-container">
+                        <div class="donut-chart"></div>
+                        <div class="legend">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #00cc44;"></div>
+                                <span>Data Structures</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #0066ff;"></div>
+                                <span>Computer Networks</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #ff0000;"></div>
+                                <span>Software Engineering</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #ff6600;"></div>
+                                <span>Operating Systems</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #9966ff;"></div>
+                                <span>Database Management</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add dynamic animations on scroll
+        const panels = document.querySelectorAll('.manga-panel');
+        
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'panelAppear 0.6s ease-out forwards';
+                }
+            });
+        }, observerOptions);
+
+        panels.forEach(panel => {
+            observer.observe(panel);
+        });
+
+        // Add CSS for panel appear animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes panelAppear {
+                0% {
+                    opacity: 0;
+                    transform: translateY(50px) rotate(-5deg);
+                }
+                100% {
+                    opacity: 1;
+                    transform: translateY(0) rotate(0deg);
+                }
+            }
+            
+            .manga-panel {
+                opacity: 0;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Add click effects
+        panels.forEach(panel => {
+            panel.addEventListener('click', (e) => {
+                // Create explosion effect
+                const explosion = document.createElement('div');
+                explosion.style.cssText = `
+                    position: absolute;
+                    top: ${e.offsetY}px;
+                    left: ${e.offsetX}px;
+                    width: 50px;
+                    height: 50px;
+                    background: radial-gradient(circle, #ff0000, transparent);
+                    border-radius: 50%;
+                    transform: scale(0);
+                    animation: explode 0.5s ease-out forwards;
+                    pointer-events: none;
+                    z-index: 100;
+                `;
+                
+                panel.style.position = 'relative';
+                panel.appendChild(explosion);
+                
+                setTimeout(() => {
+                    explosion.remove();
+                }, 500);
+            });
+        });
+
+        // Add explosion animation
+        const explosionStyle = document.createElement('style');
+        explosionStyle.textContent = `
+            @keyframes explode {
+                0% {
+                    transform: scale(0);
+                    opacity: 1;
+                }
+                100% {
+                    transform: scale(2);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(explosionStyle);
+
+        // Animate progress bars on load
+        window.addEventListener('load', () => {
+            const progressBars = document.querySelectorAll('.progress-bar');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 500);
+            });
+        });
+
+        // Add random manga sound effects
+        const sfxSounds = ['POW!', 'BAM!', 'ZAP!', 'BOOM!', 'WHOOSH!', 'CRASH!', 'BANG!'];
+        
+        setInterval(() => {
+            const randomPanel = panels[Math.floor(Math.random() * panels.length)];
+            const sfxElement = randomPanel.querySelector('.sfx-label');
+            const originalText = sfxElement.textContent;
+            
+            sfxElement.textContent = sfxSounds[Math.floor(Math.random() * sfxSounds.length)];
+            sfxElement.style.animation = 'pulse 0.5s ease-in-out';
+            
+            setTimeout(() => {
+                sfxElement.textContent = originalText;
+                sfxElement.style.animation = '';
+            }, 1000);
+        }, 5000);
+    </script>
+</body>
+</html>

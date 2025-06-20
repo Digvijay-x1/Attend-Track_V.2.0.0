@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const courseSchema =  mongoose.Schema({
     title:        { type: String, required: true },      
     profName:     { type: String, required: true },
+    code:         { type: String, required: true },
     user:     { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     schedule: [{                                       
         dayOfWeek:  { type: Number, min: 0, max: 6 },     

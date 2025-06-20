@@ -34,8 +34,8 @@ const userSchema =  mongoose.Schema({
     },
     courses: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'course',
-    }]
+        ref: 'Course',
+    }],
 })
 
 module.exports = mongoose.model('User', userSchema);

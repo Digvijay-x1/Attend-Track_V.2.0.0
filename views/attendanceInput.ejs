@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Input</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .popup-form {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen p-6">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">Attendance Input</h1>
+            <p class="text-gray-600">Record your class attendance quickly and easily</p>
+        </div>
+
+        <!-- Action Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <!-- Mark Present Card -->
+            <div class="add-attendance-button bg-green-500 text-white p-6 rounded-2xl cursor-pointer hover:bg-green-600 transition-colors">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">Mark Present</h3>
+                        <p class="text-green-100">Quick attendance entry</p>
+                    </div>
+                    <div class="text-3xl">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Placeholder for Bulk Entry -->
+            <div class="bg-blue-500 text-white p-6 rounded-2xl opacity-50">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">Bulk Entry</h3>
+                        <p class="text-blue-100">Multiple classes at once</p>
+                    </div>
+                    <div class="text-3xl">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Placeholder for View History -->
+            <div class="bg-purple-500 text-white p-6 rounded-2xl opacity-50">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">View History</h3>
+                        <p class="text-purple-100">Past attendance records</p>
+                    </div>
+                    <div class="text-3xl">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+<div class="flex justify-between align-center gap-4">
+        <!-- Today's Sessions -->
+        <div class="today-sessions mt-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Today's Schedule</h2>
+            <p class="text-gray-600 mb-6">Mark attendance for today's classes</p>
+          
+            <div class="grid grid-cols-1 gap-4">
+                <% user.courses.forEach((course) => {
+                    course.schedule.forEach((schedule) => {
+                        if (schedule.status === 'scheduled' && schedule.dayOfWeek === new Date().getDay()) { %>
+          
+                            <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200 attendance-card">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <h3 class="text-xl font-bold text-gray-900 mb-1"><%= course.title %></h3>
+                                        <p class="text-gray-600 mb-1"><%= schedule.startTime %> – <%= schedule.endTime %></p>
+                                        <p class="text-gray-500"><%= course.profName %></p>
+                                    </div>
+                                    <div class="flex gap-2 attendance-buttons">
+                                        <form action="/attendances/addAttendance" method="post" style="display: inline;">
+                                            <input type="hidden" name="courseId" value="<%= course._id %>">
+                                            <button type="submit" name="status" value="present" class="present-btn bg-green-500 text-white px-6 py-2 rounded-md font-medium hover:bg-green-600 transition-colors">
+                                                Present
+                                            </button>
+                                        </form>
+                                        <form action="/attendances/addAttendance" method="post" style="display: inline;">
+                                            <input type="hidden" name="courseId" value="<%= course._id %>">
+                                            <button type="submit" name="status" value="absent" class="absent-btn bg-red-500 text-white px-6 py-2 rounded-md font-medium hover:bg-red-600 transition-colors">
+                                                Absent
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+          
+                    <%  } }); }); %>
+            </div>
+        </div>
+    
+        <!-- Recent Attendance -->
+        <div class="recent-attendance mt-8">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Recent Attendance</h2>
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                <% attendances.forEach((attendance, index)=>{ %>
+                    <div class="attendance-item flex justify-between items-center p-4 <%= index !== attendances.length - 1 ? 'border-b border-gray-100' : '' %>">
+                        <div class="flex-1">
+                            <p class="font-medium text-gray-900"><%= attendance.course.title %></p>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium <%= attendance.status === 'present' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                                <%= attendance.status %>
+                            </span>
+                        </div>
+                        <div class="flex-1 text-right">
+                            <p class="text-gray-500"><%= attendance.markedAt.toLocaleDateString() %></p>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- Popup Form -->
+    <div class="popup-form fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-900">Mark Attendance</h2>
+                <button class="close text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <form action="/attendances/addAttendance" method="post" class="space-y-4">
+                <div>
+                    <label for="courseId" class="block text-sm font-medium text-gray-700 mb-1">Course</label>
+                    <select name="courseId" id="courseId" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="" disabled selected>Select Course</option>
+                        <% user.courses.forEach((course)=>{ %>
+                            <option value="<%= course._id %>"><%= course.title %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <select name="status" id="status" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="present" selected>Present</option>
+                        <option value="absent">Absent</option>
+                    </select>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button type="button" class="close flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors">
+                        Submit
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        const popupForm = document.querySelector('.popup-form');
+        const addAttendanceButton = document.querySelector('.add-attendance-button');
+        const closeButtons = document.querySelectorAll('.close');
+        
+        addAttendanceButton.addEventListener('click', () => {
+            popupForm.style.display = 'flex';
+        });
+        
+        closeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                popupForm.style.display = 'none';
+            });
+        });
+        
+        // Close popup when clicking outside
+        popupForm.addEventListener('click', (e) => {
+            if (e.target === popupForm) {
+                popupForm.style.display = 'none';
+            }
+        });
+
+        // Get all attendance forms
+        const attendanceForms = document.querySelectorAll('.attendance-card form');
+        
+        // Add submit event listeners to each form
+        attendanceForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                // Prevent the default form submission
+                e.preventDefault();
+                
+                // Find the clicked button (the one that triggered the submit)
+                const clickedBtn = document.activeElement;
+                if (clickedBtn.classList.contains('present-btn') || clickedBtn.classList.contains('absent-btn')) {
+                    // Find the card and buttons container
+                    const card = form.closest('.attendance-card');
+                    const buttonsContainer = card.querySelector('.attendance-buttons');
+                    
+                    // Get form data
+                    const formData = new FormData(form);
+                    const courseId = formData.get('courseId');
+                    const status = clickedBtn.value;
+                    
+                    // Submit the form data using fetch
+                    fetch('/attendances/addAttendance', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `courseId=${courseId}&status=${status}`
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            // Clear the buttons container
+                            buttonsContainer.innerHTML = '';
+                            
+                            // Show status indicator based on which button was clicked
+                            if (clickedBtn.classList.contains('present-btn')) {
+                                buttonsContainer.innerHTML = '<span class="bg-green-100 text-green-800 px-6 py-2 rounded-md font-medium">Present ✓</span>';
+                            } else {
+                                buttonsContainer.innerHTML = '<span class="bg-red-100 text-red-800 px-6 py-2 rounded-md font-medium">Absent ✓</span>';
+                            }
+                            
+                            // Update the recent attendance section if it exists
+                            updateRecentAttendance(courseId, status);
+                        } else {
+                            console.error('Form submission failed');
+                            alert('Failed to record attendance. Please try again.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                    });
+                }
+            });
+        });
+        
+        // Function to update the recent attendance section
+        function updateRecentAttendance(courseId, status) {
+            // This would ideally fetch the updated recent attendance from the server
+            // For now, we'll just add a simple visual indicator that it was recorded
+            const recentAttendanceSection = document.querySelector('.recent-attendance');
+            if (recentAttendanceSection) {
+                const courseTitle = document.querySelector(`.attendance-card input[value="${courseId}"]`)
+                    ?.closest('.attendance-card')
+                    ?.querySelector('h3')?.textContent || 'Course';
+                
+                const today = new Date().toLocaleDateString();
+                const statusClass = status === 'present' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+                
+                const newAttendanceItem = document.createElement('div');
+                newAttendanceItem.className = 'attendance-item flex justify-between items-center p-4 border-b border-gray-100';
+                newAttendanceItem.innerHTML = `
+                    <div class="flex-1">
+                        <p class="font-medium text-gray-900">${courseTitle}</p>
+                    </div>
+                    <div class="flex-1 text-center">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusClass}">
+                            ${status}
+                        </span>
+                    </div>
+                    <div class="flex-1 text-right">
+                        <p class="text-gray-500">${today}</p>
+                    </div>
+                `;
+                
+                const attendanceContainer = recentAttendanceSection.querySelector('.bg-white');
+                if (attendanceContainer) {
+                    // Insert at the top
+                    attendanceContainer.insertBefore(newAttendanceItem, attendanceContainer.firstChild);
+                    
+                    // Remove the last item if there are more than 3
+                    const items = attendanceContainer.querySelectorAll('.attendance-item');
+                    if (items.length > 3) {
+                        attendanceContainer.removeChild(items[items.length - 1]);
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -8,16 +8,21 @@ const attendancesRouter = require('./routes/attendancesRouter');
 const classSessionsRouter = require('./routes/classSessionsRouter');
 const indexRouter = require('./routes/index');
 const path = require('path');
-const session = require('express-session');
+const expressSession = require('express-session');
 const flash = require('connect-flash');
 
 
 require('dotenv').config();
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-}));
+
+
+app.use(
+    expressSession({
+        resave: false,
+        saveUninitialized: false,
+        secret: process.env.EXPRESS_SESSION_SECRET,
+    })
+)
+
 app.use(flash());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

@@ -27,7 +27,7 @@ module.exports.registerUser = async (req, res) => {
                 let token = generateToken(user);
                 res.cookie('token', token, {httpOnly: true, secure: true, maxAge: 3600000});
                 req.flash('success', 'user jwt token created');
-                res.redirect('/');
+                res.redirect('/dashboard');
                 
             });
         });
@@ -54,7 +54,7 @@ module.exports.loginUser = async (req, res) => {
                 let token = generateToken(user);
                 res.cookie('token', token, {httpOnly: true, secure: true, maxAge: 3600000});
                 req.flash('success', 'user jwt token created');
-                res.redirect('/');
+                res.redirect('/dashboard');
             }
             else{
                 req.flash('error', 'email or password is incorrect');
@@ -65,3 +65,10 @@ module.exports.loginUser = async (req, res) => {
         console.log(error.message);
     }
 }
+
+module.exports.logout = (req,res)=>{
+    res.cookie('token', '', {httpOnly: true, secure: true, maxAge: 0});
+    req.flash('success', 'Logged out successfully');
+    res.redirect('/');
+
+}   

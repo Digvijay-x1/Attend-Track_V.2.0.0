@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-green { background-color: #10b981; }
+        .progress-red { background-color: #ef4444; }
+        .progress-orange { background-color: #f59e0b; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Analytics</h1>
+            <div class="flex items-center gap-4">
+                <span class="text-sm text-gray-600">This Semester</span>
+                <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Export
+                </button>
+            </div>
+        </div>
+
+        <!-- Overview Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Overall Attendance -->
+            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-sm font-medium text-gray-600">Overall Attendance</h3>
+                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold text-gray-900 mb-1">
+                    <%= Math.round(attendances.filter(attendance=> attendance.status === 'present').length / attendances.length * 100) %>%
+                </div>
+                <div class="flex items-center text-sm">
+                    <svg class="w-4 h-4 text-green-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17l9.2-9.2M17 17V7H7"></path>
+                    </svg>
+                    <span class="text-green-600 font-medium">+2.1%</span>
+                    <span class="text-gray-500 ml-1">vs last month</span>
+                </div>
+            </div>
+
+            <!-- Classes Attended -->
+            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-sm font-medium text-gray-600">Classes Attended</h3>
+                    <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold text-gray-900 mb-1">
+                    <%= attendances.filter(attendance=> attendance.status === 'present').length %>
+                </div>
+                <div class="text-sm text-gray-500">
+                    Out of <%= attendances.length %> total
+                </div>
+            </div>
+
+            <!-- Classes Missed -->
+            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-sm font-medium text-gray-600">Classes Missed</h3>
+                    <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold text-gray-900 mb-1">
+                    <%= attendances.filter(attendance=> attendance.status === 'absent').length %>
+                </div>
+                <div class="text-sm text-gray-500">
+                    <%= Math.round(attendances.filter(attendance=> attendance.status === 'absent').length / attendances.length * 100) %>% absence rate
+                </div>
+            </div>
+
+            <!-- Best Subject -->
+            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-sm font-medium text-gray-600">Best Subject</h3>
+                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <% if (bestCourse) { %>
+                    <div class="text-lg font-bold text-purple-600 mb-1"><%= bestCourse.title %></div>
+                    <div class="text-sm text-gray-500"><%= bestAttendanceRate %>% attendance</div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Subject-wise Detailed Analysis -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+            <!-- Header -->
+            <div class="px-6 py-4 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-semibold text-gray-900">Subject-wise Detailed Analysis</h2>
+                    <div class="flex gap-2">
+                        <button class="px-3 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded-full">All</button>
+                        <button class="px-3 py-1 text-xs font-medium text-gray-500 hover:bg-gray-100 rounded-full">Above 75%</button>
+                        <button class="px-3 py-1 text-xs font-medium text-gray-500 hover:bg-gray-100 rounded-full">Below 75%</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Table Header -->
+            <div class="px-6 py-3 bg-gray-50 border-b border-gray-200">
+                <div class="grid grid-cols-6 gap-4 text-xs font-medium text-gray-500 uppercase tracking-wide text-center">
+                    <div>SUBJECT</div>
+                    <div>ATTENDANCE %</div>
+                    <div>CLASSES ATTENDED</div>
+                    <div>TOTAL CLASSES</div>
+                    <div>TREND</div>
+                    <div>STATUS</div>
+                </div>
+            </div>
+            
+            <!-- Table Body -->
+            <div class="divide-y divide-gray-200">
+                <% courses.forEach((course) => { %>
+                <div class="px-6 py-4 hover:bg-gray-50 transition-colors">
+                    <div class="grid grid-cols-6 gap-4 items-center justify-center text-center">
+                        <div>
+                            <div class="font-semibold text-gray-900"><%= course.title %></div>
+                            <div class="text-sm text-gray-500"><%= course.code %></div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex items-center gap-3">
+                                <div class="progress-bar bg-gray-200 flex-1">
+                                    <div class="progress-fill <%= course.attendancePercentage >= 75 ? 'progress-green' : course.attendancePercentage >= 50 ? 'progress-orange' : 'progress-red' %>" style="width: <%= course.attendancePercentage %>%"></div>
+                                </div>
+                                <span class="font-semibold text-gray-900 text-sm"><%= course.attendancePercentage %>%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="font-medium text-gray-900"><%= course.classesAttended %></div>
+                        
+                        <div class="font-medium text-gray-900"><%= course.totalClasses %></div>
+                        
+                        <div class="flex items-center justify-center <%= course.trend >= 0 ? 'text-green-600' : 'text-red-600' %>">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <% if (course.trend >= 0) { %>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17l9.2-9.2M17 17V7H7"></path>
+                                <% } else { %>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 7l-9.2 9.2M7 7v10h10"></path>
+                                <% } %>
+                            </svg>
+                            <span class="font-medium text-sm"><%= course.trend >= 0 ? '+' : '' %><%= course.trend %>%</span>
+                        </div>
+                        
+                        <div>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                <%= course.attendancePercentage >= 85 ? 'bg-green-100 text-green-800' : 
+                                    course.attendancePercentage >= 75 ? 'bg-yellow-100 text-yellow-800' : 
+                                    'bg-red-100 text-red-800' %>">
+                                <%= course.attendancePercentage >= 85 ? 'Above Target' : 
+                                    course.attendancePercentage >= 75 ? 'Just Above' : 
+                                    'Below Target' %>
+                            </span>
+                        </div>
+                        
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

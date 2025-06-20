@@ -3,16 +3,361 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Course</title>
+    <title>Add Course - Multiple Schedules</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background-color: #f5f5f5;
+        }
+        
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 { 
+            color: #333; 
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-group { 
+            margin-bottom: 20px; 
+        }
+        
+        label { 
+            display: block; 
+            margin-bottom: 5px; 
+            font-weight: bold;
+            color: #555;
+        }
+        
+        input, select { 
+            width: 100%;
+            padding: 10px; 
+            border: 1px solid #ddd; 
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0,123,255,0.3);
+        }
+        
+        .schedule-section {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            background-color: #f8f9fa;
+        }
+        
+        .schedule-entry { 
+            border: 1px solid #dee2e6; 
+            padding: 15px; 
+            margin: 15px 0; 
+            border-radius: 6px; 
+            background: white;
+            position: relative;
+        }
+        
+        .schedule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .schedule-title {
+            font-weight: bold;
+            color: #007bff;
+            margin: 0;
+        }
+        
+        .remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .remove-btn:hover {
+            background: #c82333;
+        }
+        
+        .time-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .time-group {
+            flex: 1;
+        }
+        
+        .day-status-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .day-group {
+            flex: 2;
+        }
+        
+        .status-group {
+            flex: 1;
+        }
+        
+        .add-schedule-btn {
+            background: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        
+        .add-schedule-btn:hover {
+            background: #218838;
+        }
+        
+        .submit-btn {
+            background: #007bff;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .submit-btn:hover {
+            background: #0056b3;
+        }
+        
+        .button-row {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Add Course</h1>
-    <form action="/courses/addCourse" method="post">
-        <input type="text" name="title" placeholder="title">
-        <input type="text" name="code" placeholder="code">
-        <input type="text" name="profName" placeholder="profName">
-        <button type="submit">Add Course</button>  
-    </form>
+    <div class="form-container">
+        <h1>Add Course</h1>
+        <form action="/courses/addCourse" method="post" id="courseForm">
+            <!-- Basic Course Info -->
+            <div class="form-group">
+                <label for="title">Course Title:</label>
+                <input type="text" id="title" name="title" placeholder="e.g., Calculus I" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="code">Course Code:</label>
+                <input type="text" id="code" name="code" placeholder="e.g., MATH101" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="profName">Professor Name:</label>
+                <input type="text" id="profName" name="profName" placeholder="e.g., Dr. Smith" required>
+            </div>
 
+            <!-- Schedule Section -->
+            <div class="schedule-section">
+                <h3 style="margin-top: 0; color: #333;">Course Schedule</h3>
+                <div id="scheduleContainer">
+                    <!-- First schedule entry -->
+                    <div class="schedule-entry" data-index="0">
+                        <div class="schedule-header">
+                            <h4 class="schedule-title">Schedule 1</h4>
+                            <button type="button" class="remove-btn" onclick="removeSchedule(0)" style="display: none;">Remove</button>
+                        </div>
+                        
+                        <div class="day-status-row">
+                            <div class="day-group">
+                                <label>Day of Week:</label>
+                                <select name="schedule[0][dayOfWeek]" required>
+                                    <option value="">Select Day</option>
+                                    <option value="0">Sunday</option>
+                                    <option value="1">Monday</option>
+                                    <option value="2">Tuesday</option>
+                                    <option value="3">Wednesday</option>
+                                    <option value="4">Thursday</option>
+                                    <option value="5">Friday</option>
+                                    <option value="6">Saturday</option>
+                                </select>
+                            </div>
+                            
+                            <div class="status-group">
+                                <label>Status:</label>
+                                <select name="schedule[0][status]">
+                                    <option value="scheduled">Scheduled</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="time-row">
+                            <div class="time-group">
+                                <label>Start Time:</label>
+                                <input type="time" name="schedule[0][startTime]" required>
+                            </div>
+
+                            <div class="time-group">
+                                <label>End Time:</label>
+                                <input type="time" name="schedule[0][endTime]" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-row">
+                    <button type="button" class="add-schedule-btn" onclick="addScheduleEntry()">
+                        + Add Another Schedule
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">Add Course</button>
+        </form>
+    </div>
+
+    <script>
+        let scheduleCount = 1;
+
+        function addScheduleEntry() {
+            const container = document.getElementById('scheduleContainer');
+            const newIndex = scheduleCount;
+            
+            const scheduleEntry = document.createElement('div');
+            scheduleEntry.className = 'schedule-entry';
+            scheduleEntry.setAttribute('data-index', newIndex);
+            
+            scheduleEntry.innerHTML = `
+                <div class="schedule-header">
+                    <h4 class="schedule-title">Schedule ${newIndex + 1}</h4>
+                    <button type="button" class="remove-btn" onclick="removeSchedule(${newIndex})">Remove</button>
+                </div>
+                
+                <div class="day-status-row">
+                    <div class="day-group">
+                        <label>Day of Week:</label>
+                        <select name="schedule[${newIndex}][dayOfWeek]" required>
+                            <option value="">Select Day</option>
+                            <option value="0">Sunday</option>
+                            <option value="1">Monday</option>
+                            <option value="2">Tuesday</option>
+                            <option value="3">Wednesday</option>
+                            <option value="4">Thursday</option>
+                            <option value="5">Friday</option>
+                            <option value="6">Saturday</option>
+                        </select>
+                    </div>
+                    
+                    <div class="status-group">
+                        <label>Status:</label>
+                        <select name="schedule[${newIndex}][status]">
+                            <option value="scheduled">Scheduled</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="time-row">
+                    <div class="time-group">
+                        <label>Start Time:</label>
+                        <input type="time" name="schedule[${newIndex}][startTime]" required>
+                    </div>
+
+                    <div class="time-group">
+                        <label>End Time:</label>
+                        <input type="time" name="schedule[${newIndex}][endTime]" required>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(scheduleEntry);
+            scheduleCount++;
+            
+            // Show remove button on first entry if there are now multiple entries
+            updateRemoveButtons();
+        }
+
+        function removeSchedule(index) {
+            const entry = document.querySelector(`[data-index="${index}"]`);
+            if (entry) {
+                entry.remove();
+                updateRemoveButtons();
+                updateScheduleTitles();
+            }
+        }
+
+        function updateRemoveButtons() {
+            const entries = document.querySelectorAll('.schedule-entry');
+            const removeButtons = document.querySelectorAll('.remove-btn');
+            
+            // Show remove buttons only if there's more than one entry
+            removeButtons.forEach(btn => {
+                btn.style.display = entries.length > 1 ? 'inline-block' : 'none';
+            });
+        }
+
+        function updateScheduleTitles() {
+            const entries = document.querySelectorAll('.schedule-entry');
+            entries.forEach((entry, index) => {
+                const title = entry.querySelector('.schedule-title');
+                title.textContent = `Schedule ${index + 1}`;
+            });
+        }
+
+        // Form validation
+        document.getElementById('courseForm').addEventListener('submit', function(e) {
+            const scheduleEntries = document.querySelectorAll('.schedule-entry');
+            
+            if (scheduleEntries.length === 0) {
+                e.preventDefault();
+                alert('Please add at least one schedule entry.');
+                return;
+            }
+
+            // Validate that all required fields are filled
+            let isValid = true;
+            scheduleEntries.forEach((entry, index) => {
+                const daySelect = entry.querySelector(`select[name="schedule[${entry.dataset.index}][dayOfWeek]"]`);
+                const startTime = entry.querySelector(`input[name="schedule[${entry.dataset.index}][startTime]"]`);
+                const endTime = entry.querySelector(`input[name="schedule[${entry.dataset.index}][endTime]"]`);
+                
+                if (!daySelect.value || !startTime.value || !endTime.value) {
+                    isValid = false;
+                }
+
+                // Validate end time is after start time
+                if (startTime.value && endTime.value && startTime.value >= endTime.value) {
+                    alert(`Schedule ${index + 1}: End time must be after start time.`);
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+                alert('Please fill in all required schedule fields.');
+            }
+        });
+    </script>
 </body>
 </html>

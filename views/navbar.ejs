@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .popup-form {
+            display: none;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .dot-present {
+            background-color: #10b981;
+        }
+        .dot-absent {
+            background-color: #ef4444;
+        }
+        
+        /* Remove body padding since navbar is in normal flow */
+        body {
+            padding-top: 0;
+        }
+        
+        /* Add proper spacing between navbar and content */
+        .main-container {
+            margin-top: 2rem; /* 32px spacing after navbar */
+        }
+        
+        /* Responsive spacing adjustments */
+        @media (min-width: 768px) {
+            .main-container {
+                margin-top: 2.5rem; /* 40px spacing on larger screens */
+            }
+        }
+        
+        /* Ensure navbar has proper spacing and doesn't interfere */
+        nav {
+            position: relative;
+            z-index: 1000;
+            margin-bottom: 0; /* Remove any default bottom margin */
+        }
+        
+        /* Responsive popup form */
+        .popup-form .bg-white {
+            margin: 1rem;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        @media (max-width: 640px) {
+            .popup-form .bg-white {
+                margin: 0.5rem;
+                max-width: calc(100vw - 1rem);
+            }
+            
+        }
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-green { background-color: #10b981; }
+        .progress-red { background-color: #ef4444; }
+        .progress-orange { background-color: #f59e0b; }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="fixed left-0 top-0 h-full w-64 bg-white shadow-lg border-r border-gray-200 flex flex-col">
+        <!-- Header with Logo and Title -->
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center space-x-3">
+                <!-- Logo -->
+                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold text-lg">AT</span>
+                </div>
+                <!-- Title -->
+                <h1 class="text-xl font-semibold text-gray-800">AttendTrack</h1>
+            </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="flex-1 py-6">
+            <!-- Dashboard -->
+            <a href="/dashboard" class="flex items-center px-6 py-3 <%= path === '/dashboard' ? 'text-white bg-gray-700' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100' %> rounded-lg mx-4 mb-2 transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                </svg>
+                Dashboard
+            </a>
+
+            <!-- Attendance Input -->
+            <a href="/attendanceInput" class="flex items-center px-6 py-3 <%= path === '/attendanceInput' ? 'text-white bg-gray-700' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100' %> rounded-lg mx-4 mb-2 transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+                </svg>
+                Attendance Input
+            </a>
+
+            <!-- Subject Management -->
+            <a href="/subjectManagement" class="flex items-center px-6 py-3 <%= path === '/subjectManagement' ? 'text-white bg-gray-700' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100' %> rounded-lg mx-4 mb-2 transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                Subject Management
+            </a>
+
+            <!-- Analytics -->
+            <a href="/analytics" class="flex items-center px-6 py-3 <%= path === '/analytics' ? 'text-white bg-gray-700' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100' %> rounded-lg mx-4 mb-2 transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
+                </svg>
+                Analytics
+            </a>
+
+            <!-- Alerts -->
+            <a href="/alerts" class="flex items-center px-6 py-3 <%= path === '/alerts' ? 'text-white bg-gray-700' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100' %> rounded-lg mx-4 mb-2 transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+                </svg>
+                Alerts
+            </a>
+
+            <!-- Calculator -->
+            <a href="/calculator" class="flex items-center px-6 py-3 <%= path === '/calculator' ? 'text-white bg-gray-700' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100' %> rounded-lg mx-4 mb-2 transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8-4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zM9 9H7V7h2v2zm4 0h-2V7h2v2zm4 0h-2V7h2v2z"/>
+                </svg>
+                Calculator
+            </a>
+
+            <!-- Profile Settings -->
+            <a href="/profile" class="flex items-center px-6 py-3 <%= path === '/profile' ? 'text-white bg-gray-700' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100' %> rounded-lg mx-4 mb-2 transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.82,11.69,4.82,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+                </svg>
+                Profile Settings
+            </a>
+        </div>
+
+        <!-- User Profile Section -->
+        <div class="border-t border-gray-200 p-4">
+            <div class="flex items-center space-x-3 mb-4">
+                <!-- User Avatar -->
+                <img src="data:image/jpeg;base64,<%= user.profilePicture.toString('base64') %>" alt="Profile Picture" class="w-10 h-10 rounded-full">
+                <div class="flex-1">
+                    <div class="text-sm font-medium text-gray-800"><%= user.username %></div>
+                    <div class="text-xs text-gray-500"><%= user.email %></div>
+                </div>
+            </div>
+            
+            <!-- Logout Button -->
+            <a href="/users/logout" class="flex items-center justify-center w-full px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                </svg>
+                Logout
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content Area (add margin to accommodate sidebar) -->
+    <div class="ml-64">
+        <!-- Your main content goes here -->
+    </div>
+</body>
+</html>

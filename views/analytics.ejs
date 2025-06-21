@@ -1,21 +1,22 @@
 <%- include('navbar') %>    
 
-
-
-
-<body class="bg-gray-50 min-h-screen" style="padding-left: 15%;">
+<body class="bg-gray-50 min-h-screen md:ml-64 sm:ml-0">
     <div class="max-w-7xl mx-auto p-6">
+        <!-- Mobile Menu Toggle (only visible on small screens) -->
+        <div class="sm:block md:hidden mb-4">
+            <button id="mobile-menu-toggle" class="p-2 rounded-md bg-white shadow">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+
         <!-- Header -->
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-3xl font-bold text-gray-900">Analytics</h1>
             <div class="flex items-center gap-4">
                 <span class="text-sm text-gray-600">This Semester</span>
-                <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                    Export
-                </button>
+                
             </div>
         </div>
 
@@ -24,16 +25,19 @@
             <!-- Overall Attendance -->
             <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
                 <div class="flex items-center justify-between mb-2">
+                    <div>
                     <h3 class="text-sm font-medium text-gray-600">Overall Attendance</h3>
-                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="text-3xl font-bold text-gray-900 mb-1">
+                        <%= Math.round(attendances.filter(attendance=> attendance.status === 'present').length / attendances.length * 100) %>%
+                    </div>
+                </div>
+                    <div class="w-11 h-11 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
                         </svg>
                     </div>
                 </div>
-                <div class="text-3xl font-bold text-gray-900 mb-1">
-                    <%= Math.round(attendances.filter(attendance=> attendance.status === 'present').length / attendances.length * 100) %>%
-                </div>
+
                 <div class="flex items-center text-sm">
                     <svg class="w-4 h-4 text-green-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17l9.2-9.2M17 17V7H7"></path>
@@ -46,16 +50,19 @@
             <!-- Classes Attended -->
             <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
                 <div class="flex items-center justify-between mb-2">
+                    <div>
                     <h3 class="text-sm font-medium text-gray-600">Classes Attended</h3>
-                    <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="text-3xl font-bold text-gray-900 mb-1">
+                        <%= attendances.filter(attendance=> attendance.status === 'present').length %>
+                    </div>
+                     </div>
+                    <div class="w-11 h-11 bg-green-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                         </svg>
                     </div>
                 </div>
-                <div class="text-3xl font-bold text-gray-900 mb-1">
-                    <%= attendances.filter(attendance=> attendance.status === 'present').length %>
-                </div>
+      
                 <div class="text-sm text-gray-500">
                     Out of <%= attendances.length %> total
                 </div>
@@ -64,16 +71,19 @@
             <!-- Classes Missed -->
             <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
                 <div class="flex items-center justify-between mb-2">
+                    <div>
                     <h3 class="text-sm font-medium text-gray-600">Classes Missed</h3>
-                    <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="text-3xl font-bold text-gray-900 mb-1">
+                        <%= attendances.filter(attendance=> attendance.status === 'absent').length %>
+                    </div>
+                    </div>
+                    <div class="w-11 h-11 bg-red-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     </div>
                 </div>
-                <div class="text-3xl font-bold text-gray-900 mb-1">
-                    <%= attendances.filter(attendance=> attendance.status === 'absent').length %>
-                </div>
+      
                 <div class="text-sm text-gray-500">
                     <%= Math.round(attendances.filter(attendance=> attendance.status === 'absent').length / attendances.length * 100) %>% absence rate
                 </div>
@@ -82,15 +92,18 @@
             <!-- Best Subject -->
             <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
                 <div class="flex items-center justify-between mb-2">
+                    <div>
                     <h3 class="text-sm font-medium text-gray-600">Best Subject</h3>
-                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <% if (bestCourse) { %>
+                        <div class="text-lg font-bold text-purple-600 mb-1"><%= bestCourse.title %></div>
+                    </div>
+                    <div class="w-11 h-11 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
                         </svg>
                     </div>
                 </div>
-                <% if (bestCourse) { %>
-                    <div class="text-lg font-bold text-purple-600 mb-1"><%= bestCourse.title %></div>
+ 
                     <div class="text-sm text-gray-500"><%= bestAttendanceRate %>% attendance</div>
                 <% } %>
             </div>
@@ -170,3 +183,57 @@
         </div>
     </div>
 </body>
+
+<style>
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .ml-64 {
+        margin-left: 0;
+    }
+    
+    nav {
+        display: none;
+    }
+    
+    nav.block-mobile {
+        display: block;
+        position: fixed;
+        z-index: 50;
+        width: 100%;
+        height: 100%;
+    }
+    
+    nav.hidden-mobile {
+        display: none;
+    }
+    
+    /* Make table responsive */
+    .grid-cols-6 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    
+    .grid-cols-6 > div {
+        margin-bottom: 8px;
+    }
+}
+</style>
+
+<script>
+    // Mobile menu toggle functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        if (mobileMenuToggle) {
+            mobileMenuToggle.addEventListener('click', function() {
+                const sidebar = document.querySelector('nav');
+                
+                if (sidebar.classList.contains('hidden-mobile')) {
+                    sidebar.classList.remove('hidden-mobile');
+                    sidebar.classList.add('block-mobile');
+                } else {
+                    sidebar.classList.add('hidden-mobile');
+                    sidebar.classList.remove('block-mobile');
+                }
+            });
+        }
+    });
+</script>

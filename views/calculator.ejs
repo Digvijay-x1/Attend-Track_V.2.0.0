@@ -1,6 +1,16 @@
 <%- include('navbar') %>    
 
+<div class="md:ml-64 sm:ml-0">
     <div class="max-w-5xl mx-auto p-6">
+        <!-- Mobile Menu Toggle (only visible on small screens) -->
+        <div class="sm:block md:hidden mb-4">
+            <button id="mobile-menu-toggle" class="p-2 rounded-md bg-white shadow">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+
         <div class="flex items-center gap-3 mb-6">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -84,14 +94,24 @@
 
                     <div class="bg-blue-50 rounded-lg p-4 mb-4">
                         <h3 class="text-sm font-medium text-slate-700 mb-2">Current Percentage</h3>
-                        <div class="flex gap-2 mb-2">
-                            <input type="number" id="attended" placeholder="Attended" class="flex-1 px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            <input type="number" id="total" placeholder="Total" class="flex-1 px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <div class="flex gap-2 mb-2 w-full overflow-hidden">
+                          <input
+                            type="number"
+                            id="attended"
+                            placeholder="Attended"
+                            class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                          <input
+                            type="number"
+                            id="total"
+                            placeholder="Total"
+                            class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          />
                         </div>
                         <div class="text-right text-sm font-medium">
-                            Percentage: <span id="current-percentage" class="text-blue-700">0%</span>
+                          Percentage: <span id="current-percentage" class="text-blue-700">0%</span>
                         </div>
-                    </div>
+                      </div>
 
                     <div class="bg-purple-50 rounded-lg p-4 mb-4">
                         <h3 class="text-sm font-medium text-purple-800 mb-2">What If Scenarios</h3>
@@ -177,79 +197,124 @@
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        // Quick Calculator Logic
-        document.addEventListener('DOMContentLoaded', function() {
-            const attendedInput = document.getElementById('attended');
-            const totalInput = document.getElementById('total');
-            const currentPercentage = document.getElementById('current-percentage');
-            const attend5 = document.getElementById('attend-5');
-            const miss2 = document.getElementById('miss-2');
-            const attend10 = document.getElementById('attend-10');
-            const goal75 = document.getElementById('goal-75');
-            const goal80 = document.getElementById('goal-80');
-            const goal85 = document.getElementById('goal-85');
+<style>
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .ml-64 {
+        margin-left: 0;
+    }
+    
+    nav {
+        display: none;
+    }
+    
+    nav.block-mobile {
+        display: block;
+        position: fixed;
+        z-index: 50;
+        width: 100%;
+        height: 100%;
+    }
+    
+    nav.hidden-mobile {
+        display: none;
+    }
+}
+</style>
+
+<script>
+    // Quick Calculator Logic
+    document.addEventListener('DOMContentLoaded', function() {
+        const attendedInput = document.getElementById('attended');
+        const totalInput = document.getElementById('total');
+        const currentPercentage = document.getElementById('current-percentage');
+        const attend5 = document.getElementById('attend-5');
+        const miss2 = document.getElementById('miss-2');
+        const attend10 = document.getElementById('attend-10');
+        const goal75 = document.getElementById('goal-75');
+        const goal80 = document.getElementById('goal-80');
+        const goal85 = document.getElementById('goal-85');
+        
+        // Future classes assumption
+        const futureClasses = 20;
+        
+        function calculateAll() {
+            const attended = parseInt(attendedInput.value) || 0;
+            const total = parseInt(totalInput.value) || 0;
             
-            // Future classes assumption
-            const futureClasses = 20;
-            
-            function calculateAll() {
-                const attended = parseInt(attendedInput.value) || 0;
-                const total = parseInt(totalInput.value) || 0;
-                
-                // Avoid division by zero
-                if (total === 0) {
-                    currentPercentage.textContent = '0%';
-                    attend5.textContent = '+0%';
-                    miss2.textContent = '-0%';
-                    attend10.textContent = '+0%';
-                    goal75.textContent = 'Need 0 more';
-                    goal80.textContent = 'Need 0 more';
-                    goal85.textContent = 'Need 0 more';
-                    return;
-                }
-                
-                // Current percentage
-                const current = (attended / total) * 100;
-                currentPercentage.textContent = current.toFixed(2) + '%';
-                
-                // What if scenarios
-                const attend5Percent = ((attended + 5) / (total + 5)) * 100;
-                const miss2Percent = (attended / (total + 2)) * 100;
-                const attend10Percent = ((attended + 10) / (total + 10)) * 100;
-                
-                const attend5Change = attend5Percent - current;
-                const miss2Change = miss2Percent - current;
-                const attend10Change = attend10Percent - current;
-                
-                attend5.textContent = (attend5Change >= 0 ? '+' : '') + attend5Change.toFixed(1) + '%';
-                attend5.className = attend5Change >= 0 ? 'font-medium text-green-600' : 'font-medium text-red-600';
-                
-                miss2.textContent = (miss2Change >= 0 ? '+' : '') + miss2Change.toFixed(1) + '%';
-                miss2.className = miss2Change >= 0 ? 'font-medium text-green-600' : 'font-medium text-red-600';
-                
-                attend10.textContent = (attend10Change >= 0 ? '+' : '') + attend10Change.toFixed(1) + '%';
-                attend10.className = attend10Change >= 0 ? 'font-medium text-green-600' : 'font-medium text-red-600';
-                
-                // Goal tracker
-                function classesNeededForGoal(goal) {
-                    // Formula: (goal * (total + x) - 100 * attended) / (100 - goal) = x
-                    // Where x is the number of classes needed to attend
-                    const classesNeeded = Math.ceil((goal * total - 100 * attended) / (100 - goal));
-                    return Math.max(0, classesNeeded);
-                }
-                
-                const needed75 = classesNeededForGoal(75);
-                const needed80 = classesNeededForGoal(80);
-                const needed85 = classesNeededForGoal(85);
-                
-                goal75.textContent = needed75 > futureClasses ? 'Not possible' : `Need ${needed75} more`;
-                goal80.textContent = needed80 > futureClasses ? 'Not possible' : `Need ${needed80} more`;
-                goal85.textContent = needed85 > futureClasses ? 'Not possible' : `Need ${needed85} more`;
+            // Avoid division by zero
+            if (total === 0) {
+                currentPercentage.textContent = '0%';
+                attend5.textContent = '+0%';
+                miss2.textContent = '-0%';
+                attend10.textContent = '+0%';
+                goal75.textContent = 'Need 0 more';
+                goal80.textContent = 'Need 0 more';
+                goal85.textContent = 'Need 0 more';
+                return;
             }
             
+            // Current percentage
+            const current = (attended / total) * 100;
+            currentPercentage.textContent = current.toFixed(2) + '%';
+            
+            // What if scenarios
+            const attend5Percent = ((attended + 5) / (total + 5)) * 100;
+            const miss2Percent = (attended / (total + 2)) * 100;
+            const attend10Percent = ((attended + 10) / (total + 10)) * 100;
+            
+            const attend5Change = attend5Percent - current;
+            const miss2Change = miss2Percent - current;
+            const attend10Change = attend10Percent - current;
+            
+            attend5.textContent = (attend5Change >= 0 ? '+' : '') + attend5Change.toFixed(1) + '%';
+            attend5.className = attend5Change >= 0 ? 'font-medium text-green-600' : 'font-medium text-red-600';
+            
+            miss2.textContent = (miss2Change >= 0 ? '+' : '') + miss2Change.toFixed(1) + '%';
+            miss2.className = miss2Change >= 0 ? 'font-medium text-green-600' : 'font-medium text-red-600';
+            
+            attend10.textContent = (attend10Change >= 0 ? '+' : '') + attend10Change.toFixed(1) + '%';
+            attend10.className = attend10Change >= 0 ? 'font-medium text-green-600' : 'font-medium text-red-600';
+            
+            // Goal tracker
+            function classesNeededForGoal(goal) {
+                // Formula: (goal * (total + x) - 100 * attended) / (100 - goal) = x
+                // Where x is the number of classes needed to attend
+                const classesNeeded = Math.ceil((goal * total - 100 * attended) / (100 - goal));
+                return Math.max(0, classesNeeded);
+            }
+            
+            const needed75 = classesNeededForGoal(75);
+            const needed80 = classesNeededForGoal(80);
+            const needed85 = classesNeededForGoal(85);
+            
+            goal75.textContent = needed75 > futureClasses ? 'Not possible' : `Need ${needed75} more`;
+            goal80.textContent = needed80 > futureClasses ? 'Not possible' : `Need ${needed80} more`;
+            goal85.textContent = needed85 > futureClasses ? 'Not possible' : `Need ${needed85} more`;
+        }
+        
+        // Add event listeners
+        if (attendedInput && totalInput) {
             attendedInput.addEventListener('input', calculateAll);
             totalInput.addEventListener('input', calculateAll);
-        });
-    </script>
+        }
+        
+        // Mobile menu toggle functionality
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        if (mobileMenuToggle) {
+            mobileMenuToggle.addEventListener('click', function() {
+                const sidebar = document.querySelector('nav');
+                
+                if (sidebar.classList.contains('hidden-mobile')) {
+                    sidebar.classList.remove('hidden-mobile');
+                    sidebar.classList.add('block-mobile');
+                } else {
+                    sidebar.classList.add('hidden-mobile');
+                    sidebar.classList.remove('block-mobile');
+                }
+            });
+        }
+    });
+</script>

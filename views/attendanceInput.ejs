@@ -9,8 +9,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
 </head>
-<body class="bg-gray-50 min-h-screen p-6" style="padding-left: 15%">
+<body class="bg-gray-50 min-h-screen p-6 md:ml-64 sm:ml-0">
     <div class="max-w-6xl mx-auto main-container">
+        <!-- Mobile Menu Toggle (only visible on small screens) -->
+        <div class="sm:block md:hidden mb-4">
+            <button id="mobile-menu-toggle" class="p-2 rounded-md bg-white shadow">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+
         <!-- Header -->
         <div class="mb-8">
             <h1 class="text-4xl font-bold text-gray-900 mb-2">Attendance Input</h1>
@@ -177,142 +186,150 @@
     </div>
     
     <script>
-        const popupForm = document.querySelector('.popup-form');
-        const addAttendanceButton = document.querySelector('.add-attendance-button');
-        const closeButtons = document.querySelectorAll('.close');
-        
-        addAttendanceButton.addEventListener('click', () => {
-            popupForm.style.display = 'flex';
-        });
-        
-        closeButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                popupForm.style.display = 'none';
+        document.addEventListener('DOMContentLoaded', function() {
+            const popupForm = document.querySelector('.popup-form');
+            const addAttendanceButton = document.querySelector('.add-attendance-button');
+            const closeButtons = document.querySelectorAll('.close');
+            
+            addAttendanceButton.addEventListener('click', () => {
+                popupForm.style.display = 'flex';
             });
-        });
-        
-        // Close popup when clicking outside
-        popupForm.addEventListener('click', (e) => {
-            if (e.target === popupForm) {
-                popupForm.style.display = 'none';
-            }
-        });
-
-        // Get all attendance forms
-        const attendanceForms = document.querySelectorAll('.attendance-form');
-        
-        // Add submit event listeners to each form
-        attendanceForms.forEach(form => {
-            form.addEventListener('submit', function(e) {
-                // Prevent the default form submission
-                e.preventDefault();
-                
-                // Find the clicked button (the one that triggered the submit)
-                const clickedBtn = document.activeElement;
-                if (clickedBtn.classList.contains('present-btn') || clickedBtn.classList.contains('absent-btn')) {
-                    // Find the card and buttons container
-                    const card = form.closest('.bg-white');
-                    const buttonsContainer = card.querySelector('.attendance-buttons');
-                    
-                    // Get form data
-                    const formData = new FormData(form);
-                    const courseId = formData.get('courseId');
-                    const status = clickedBtn.value;
-                    
-                    // Submit the form data using fetch
-                    fetch('/attendances/addAttendance', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: `courseId=${courseId}&status=${status}`
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            // Clear the buttons container
-                            buttonsContainer.innerHTML = '';
-                            
-                            // Show status indicator based on which button was clicked
-                            if (clickedBtn.classList.contains('present-btn')) {
-                                buttonsContainer.innerHTML = '<span class="bg-green-100 text-green-800 px-6 py-2 rounded-md font-medium">Present ✓</span>';
-                            } else {
-                                buttonsContainer.innerHTML = '<span class="bg-red-100 text-red-800 px-6 py-2 rounded-md font-medium">Absent ✓</span>';
-                            }
-                            
-                            // Update the recent attendance section if it exists
-                            updateRecentAttendance(courseId, status);
-                        } else {
-                            console.error('Form submission failed');
-                            alert('Failed to record attendance. Please try again.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('An error occurred. Please try again.');
-                    });
+            
+            closeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    popupForm.style.display = 'none';
+                });
+            });
+            
+            // Close popup when clicking outside
+            popupForm.addEventListener('click', (e) => {
+                if (e.target === popupForm) {
+                    popupForm.style.display = 'none';
                 }
             });
+
+            // Get all attendance forms
+            const attendanceForms = document.querySelectorAll('.attendance-form');
+            
+            // Add submit event listeners to each form
+            attendanceForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    // Prevent the default form submission
+                    e.preventDefault();
+                    
+                    // Find the clicked button (the one that triggered the submit)
+                    const clickedBtn = document.activeElement;
+                    if (clickedBtn.classList.contains('present-btn') || clickedBtn.classList.contains('absent-btn')) {
+                        // Find the card and buttons container
+                        const card = form.closest('.bg-white');
+                        const buttonsContainer = card.querySelector('.attendance-buttons');
+                        
+                        // Get form data
+                        const formData = new FormData(form);
+                        const courseId = formData.get('courseId');
+                        const status = clickedBtn.value;
+                        
+                        // Submit the form data using fetch
+                        fetch('/attendances/addAttendance', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: `courseId=${courseId}&status=${status}`
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                // Clear the buttons container
+                                buttonsContainer.innerHTML = '';
+                                
+                                // Show status indicator based on which button was clicked
+                                if (clickedBtn.classList.contains('present-btn')) {
+                                    buttonsContainer.innerHTML = '<span class="bg-green-100 text-green-800 px-6 py-2 rounded-md font-medium">Present ✓</span>';
+                                } else {
+                                    buttonsContainer.innerHTML = '<span class="bg-red-100 text-red-800 px-6 py-2 rounded-md font-medium">Absent ✓</span>';
+                                }
+                                
+                                // Update the recent attendance section if it exists
+                                updateRecentAttendance(courseId, status);
+                            } else {
+                                console.error('Form submission failed');
+                                alert('Failed to record attendance. Please try again.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                    }
+                });
+            });
+
+            // Mobile menu toggle functionality
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            if (mobileMenuToggle) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    const sidebar = document.querySelector('nav');
+                    
+                    if (sidebar.classList.contains('hidden-mobile')) {
+                        sidebar.classList.remove('hidden-mobile');
+                        sidebar.classList.add('block-mobile');
+                    } else {
+                        sidebar.classList.add('hidden-mobile');
+                        sidebar.classList.remove('block-mobile');
+                    }
+                });
+            }
         });
         
         // Function to update the recent attendance section
         function updateRecentAttendance(courseId, status) {
-            // This would ideally fetch the updated recent attendance from the server
-            // For now, we'll just add a simple visual indicator that it was recorded
-            const recentAttendanceSection = document.querySelector('h2:contains("Recent Entries")').closest('div').nextElementSibling;
-            if (recentAttendanceSection) {
-                const courseTitle = document.querySelector(`.attendance-form input[value="${courseId}"]`)
-                    ?.closest('.bg-white')
-                    ?.querySelector('h3')?.textContent || 'Course';
-                
-                const today = new Date().toLocaleDateString();
-                const dotClass = status === 'present' ? 'dot-present' : 'dot-absent';
-                const statusClass = status === 'present' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
-                
-                const newAttendanceItem = document.createElement('div');
-                newAttendanceItem.className = 'p-4 border-b border-gray-100';
-                newAttendanceItem.innerHTML = `
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <span class="dot ${dotClass}"></span>
-                            <span class="font-medium text-gray-900">${courseTitle}</span>
-                        </div>
-                        <div>
-                            <span class="${statusClass} px-3 py-1 rounded-full text-sm font-medium">
-                                ${status}
-                            </span>
-                        </div>
-                    </div>
-                    <p class="text-gray-500 text-sm mt-1">${today}</p>
-                `;
-                
-                // Insert at the top
-                recentAttendanceSection.insertBefore(newAttendanceItem, recentAttendanceSection.firstChild);
-                
-                // Remove the last item if there are more than 3
-                const items = recentAttendanceSection.querySelectorAll('.p-4');
-                if (items.length > 3) {
-                    recentAttendanceSection.removeChild(items[items.length - 1]);
-                }
+            // This is a placeholder function that would be implemented to update the recent entries section
+            // without reloading the page. For simplicity, we'll just reload the page after a short delay.
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        }
+    </script>
+
+    <style>
+        .popup-form {
+            display: none;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .dot-present {
+            background-color: #10b981;
+        }
+        .dot-absent {
+            background-color: #ef4444;
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .ml-64 {
+                margin-left: 0;
+            }
+            
+            nav {
+                display: none;
+            }
+            
+            nav.block-mobile {
+                display: block;
+                position: fixed;
+                z-index: 50;
+                width: 100%;
+                height: 100%;
+            }
+            
+            nav.hidden-mobile {
+                display: none;
             }
         }
-
-        // Fix for the contains selector
-        document.querySelector = (function(querySelector) {
-            return function(selector) {
-                if (selector.includes(':contains')) {
-                    const containsText = selector.match(/:contains\("([^"]+)"\)/)[1];
-                    const baseSelector = selector.replace(/:contains\("[^"]+"\)/, '');
-                    const elements = document.querySelectorAll(baseSelector);
-                    for (let i = 0; i < elements.length; i++) {
-                        if (elements[i].textContent.includes(containsText)) {
-                            return elements[i];
-                        }
-                    }
-                    return null;
-                }
-                return querySelector.call(document, selector);
-            };
-        })(document.querySelector);
-    </script>
+    </style>
 </body>
 </html>

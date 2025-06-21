@@ -255,7 +255,151 @@ router.get('/analytics', isLoggedIn, async (req, res) => {
     });
   });
 
-  router.get('/calculator', isLoggedIn, async (req, res) => {
+  router.get('/alerts', isLoggedIn, async (req, res) => {
+    try {
+        const user = await userModal.findOne({ email: req.user.email }).populate('courses');
+        const attendances = await attendanceModel.find({ user: user._id }).populate('course');
+        
+        // Calculate course-wise attendance statistics
+        const courseStatsMap = {};
+        
+        attendances.forEach(att => {
+            const id = att.course._id.toString();
+            if (!courseStatsMap[id]) {
+                courseStatsMap[id] = {
+                    course: att.course,
+                    totalClasses: 0,
+                    classesAttended: 0
+                };
+            }
+            courseStatsMap[id].totalClasses += 1;
+            if (att.status === 'present') {
+                courseStatsMap[id].classesAttended += 1;
+            }
+        });
+        
+        // Generate alerts based on attendance data
+        const alerts = {
+            critical: [],
+            warning: [],
+            info: [],
+            all: []
+        };
+        
+        // Process each course for alerts
+        Object.values(courseStatsMap).forEach(entry => {
+            const { course, classesAttended, totalClasses } = entry;
+            if (totalClasses === 0) return; // Skip courses with no attendance data
+            
+            const attendancePercentage = Math.round((classesAttended / totalClasses) * 100);
+            const classesNeededFor75Percent = Math.ceil((75 * totalClasses - 100 * classesAttended) / (100 - 75));
+            
+            // Critical alert: Below 75%
+            if (attendancePercentage < 75) {
+                alerts.critical.push({
+                    type: 'critical',
+                    title: `${course.title} - Critical Attendance Alert`,
+                    message: `Your attendance has dropped to ${attendancePercentage}%. You need to attend ${classesNeededFor75Percent > 0 ? classesNeededFor75Percent : 'more'} more classes to reach 75%.`,
+                    course: course,
+                    percentage: attendancePercentage,
+                    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
+                });
+            }
+            // Warning alert: Between 75% and 80%
+            else if (attendancePercentage >= 75 && attendancePercentage < 80) {
+                // Calculate how many classes they can miss before dropping below 75%
+                const canMissClasses = Math.floor((classesAttended - 0.75 * totalClasses) / 0.75);
+                
+                alerts.warning.push({
+                    type: 'warning',
+                    title: `${course.title} - Approaching Threshold`,
+                    message: `Your attendance is at ${attendancePercentage}%. Don't miss more than ${canMissClasses} class${canMissClasses !== 1 ? 'es' : ''} to stay above 75%.`,
+                    course: course,
+                    percentage: attendancePercentage,
+                    timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000) // 3 hours ago
+                });
+            }
+            // Info alert: Good attendance
+            else if (attendancePercentage >= 90) {
+                alerts.info.push({
+                    type: 'info',
+                    title: `${course.title} - Excellent Attendance`,
+                    message: `Great job! Your attendance is at ${attendancePercentage}%, well above the required threshold.`,
+                    course: course,
+                    percentage: attendancePercentage,
+                    timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000) // 1 day ago
+                });
+            }
+        });
+        
+        // Add overall attendance alert if below 75%
+        const totalClasses = attendances.length;
+        const classesAttended = attendances.filter(att => att.status === 'present').length;
+        const overallAttendance = totalClasses > 0 ? Math.round((classesAttended / totalClasses) * 100) : 0;
+        
+        if (overallAttendance < 75 && totalClasses > 0) {
+            alerts.critical.push({
+                type: 'critical',
+                title: 'Attendance Goal Not Met',
+                message: `Your overall attendance has fallen below the 75% requirement. Immediate action needed.`,
+                percentage: overallAttendance,
+                timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000) // 1 day ago
+            });
+        }
+        
+        // Combine all alerts
+        alerts.all = [...alerts.critical, ...alerts.warning, ...alerts.info];
+        
+        // Count alerts by type
+        const alertCounts = {
+            critical: alerts.critical.length,
+            warning: alerts.warning.length,
+            info: alerts.info.length,
+            unread: alerts.all.length // Assuming all alerts are unread initially
+        };
+        
+        // Helper function to format time ago
+        const formatTimeAgo = (timestamp) => {
+            const now = new Date();
+            const date = new Date(timestamp);
+            const seconds = Math.floor((now - date) / 1000);
+            
+            let interval = Math.floor(seconds / 31536000);
+            if (interval >= 1) {
+                return interval + " year" + (interval === 1 ? "" : "s") + " ago";
+            }
+            
+            interval = Math.floor(seconds / 2592000);
+            if (interval >= 1) {
+                return interval + " month" + (interval === 1 ? "" : "s") + " ago";
+            }
+            
+            interval = Math.floor(seconds / 86400);
+            if (interval >= 1) {
+                return interval + " day" + (interval === 1 ? "" : "s") + " ago";
+            }
+            
+            interval = Math.floor(seconds / 3600);
+            if (interval >= 1) {
+                return interval + " hour" + (interval === 1 ? "" : "s") + " ago";
+            }
+            
+            interval = Math.floor(seconds / 60);
+            if (interval >= 1) {
+                return interval + " minute" + (interval === 1 ? "" : "s") + " ago";
+            }
+            
+            return "just now";
+        };
+        
+        res.render('alert', { user, alerts, alertCounts, formatTimeAgo });
+    } catch (error) {
+        console.error('Error generating alert data:', error);
+        res.status(500).send('Failed to generate alert data');
+    }
+});
+
+router.get('/calculator', isLoggedIn, async (req, res) => {
     let user = await userModal.findOne({email: req.user.email})
     await user.populate('courses'); 
     
@@ -438,10 +582,10 @@ router.get('/analytics', isLoggedIn, async (req, res) => {
     res.render('profile', {user})
 })
 
-router.get('/alerts', isLoggedIn, async (req, res) => {
-  let user = await userModal.findOne({email: req.user.email})
-  res.render('alert', {user})
-})
+// router.get('/alerts', isLoggedIn, async (req, res) => {
+//   let user = await userModal.findOne({email: req.user.email})
+//   res.render('alert', {user})
+// })
 
 
 module.exports = router;

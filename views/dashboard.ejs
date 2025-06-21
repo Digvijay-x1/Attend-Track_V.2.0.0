@@ -1,655 +1,345 @@
 <%- include('navbar') %>    
 
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ninja Academy Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Anton&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            background: linear-gradient(45deg, #f5f5f5 25%, transparent 25%),
-                        linear-gradient(-45deg, #f5f5f5 25%, transparent 25%),
-                        linear-gradient(45deg, transparent 75%, #f5f5f5 75%),
-                        linear-gradient(-45deg, transparent 75%, #f5f5f5 75%);
-            background-size: 20px 20px;
-            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* Manga panel container */
-        .manga-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-        }
-
-        /* Header with manga title styling */
-        .header-panel {
-            background: #000;
-            color: #fff;
-            padding: 30px;
-            margin-bottom: 30px;
-            border: 8px solid #000;
-            position: relative;
-            overflow: hidden;
-            transform: rotate(-1deg);
-        }
-
-        .header-panel::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 2px,
-                rgba(255,255,255,0.1) 2px,
-                rgba(255,255,255,0.1) 4px
-            );
-            animation: speedLines 3s linear infinite;
-        }
-
-        @keyframes speedLines {
-            0% { transform: translateX(-100px) translateY(-100px); }
-            100% { transform: translateX(100px) translateY(100px); }
-        }
-
-        .header-title {
-            font-family: 'Bangers', cursive;
-            font-size: 4rem;
-            text-shadow: 4px 4px 0px #ff0000, 8px 8px 0px #000;
-            position: relative;
-            z-index: 2;
-            letter-spacing: 0.1em;
-        }
-
-        .header-subtitle {
-            font-size: 1.2rem;
-            margin-top: 10px;
-            position: relative;
-            z-index: 2;
-            font-weight: 700;
-        }
-
-        /* Avatar character panel */
-        .character-panel {
-            position: fixed;
-            top: 120px;
-            right: 30px;
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, #ff8c42, #ff6b1a);
-            border-radius: 50%;
-            border: 8px solid #000;
-            box-shadow: 0 0 0 4px #fff, 0 0 0 8px #000;
-            z-index: 10;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .character-avatar {
-            width: 100%;
-            height: 100%;
-            background: #f4d1ae;
-            border-radius: 50%;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .character-avatar::before {
-            content: '💥';
-            position: absolute;
-            top: -20px;
-            right: -20px;
-            font-size: 2rem;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
-
-        /* Main dashboard grid */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-
-        /* Manga panel styling for cards */
-        .manga-panel {
-            background: #fff;
-            border: 6px solid #000;
-            padding: 25px;
-            position: relative;
-            box-shadow: 8px 8px 0px #000;
-            transition: all 0.3s ease;
-        }
-
-        .manga-panel:hover {
-            transform: translateY(-5px) rotate(1deg);
-            box-shadow: 12px 12px 0px #000;
-            animation: panelShake 0.5s ease-in-out;
-        }
-
-        @keyframes panelShake {
-            0%, 100% { transform: translateY(-5px) rotate(1deg); }
-            25% { transform: translateY(-7px) rotate(0.5deg); }
-            75% { transform: translateY(-3px) rotate(1.5deg); }
-        }
-
-        /* SFX typography */
-        .sfx-label {
-            font-family: 'Bangers', cursive;
-            position: absolute;
-            top: -15px;
-            left: -10px;
-            background: #ff0000;
-            color: #fff;
-            padding: 5px 15px;
-            border: 3px solid #000;
-            transform: rotate(-5deg);
-            font-size: 1.2rem;
-            z-index: 5;
-            text-shadow: 2px 2px 0px #000;
-        }
-
-        /* Stat numbers with manga emphasis */
-        .stat-number {
-            font-family: 'Anton', sans-serif;
-            font-size: 3.5rem;
-            font-weight: 900;
-            color: #000;
-            text-shadow: 3px 3px 0px #fff, 6px 6px 0px #ff0000;
-            margin: 10px 0;
-            position: relative;
-        }
-
-        .stat-number.blue { color: #0066ff; }
-        .stat-number.green { color: #00cc44; }
-        .stat-number.red { color: #ff0000; }
-
-        /* Halftone background effect */
-        .halftone-bg {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100px;
-            height: 100px;
-            background: radial-gradient(circle, #000 20%, transparent 20%),
-                        radial-gradient(circle, #000 20%, transparent 20%);
-            background-size: 15px 15px;
-            background-position: 0 0, 7.5px 7.5px;
-            opacity: 0.1;
-        }
-
-        /* Progress bars with manga style */
-        .progress-container {
-            background: #000;
-            height: 15px;
-            border: 3px solid #000;
-            margin: 15px 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(45deg, #ff0000, #ff6600);
-            transition: width 1s ease-in-out;
-            position: relative;
-        }
-
-        .progress-bar::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 3px,
-                rgba(255,255,255,0.3) 3px,
-                rgba(255,255,255,0.3) 6px
-            );
-        }
-
-        /* Chart container with comic panel effect */
-        .chart-panel {
-            grid-column: 1 / -1;
-            background: #fff;
-            border: 8px solid #000;
-            padding: 30px;
-            position: relative;
-            margin-top: 20px;
-        }
-
-        .chart-panel::before {
-            content: 'データ分析！';
-            position: absolute;
-            top: -20px;
-            right: 20px;
-            background: #0066ff;
-            color: #fff;
-            padding: 8px 20px;
-            border: 4px solid #000;
-            font-family: 'Bangers', cursive;
-            font-size: 1.5rem;
-            transform: rotate(5deg);
-        }
-
-        /* Attention effects */
-        .needs-attention {
-            animation: attentionPulse 2s infinite;
-        }
-
-        @keyframes attentionPulse {
-            0%, 100% { background-color: #fff; }
-            50% { background-color: #ffe6e6; }
-        }
-
-        /* Speed line effects */
-        .speed-lines {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            overflow: hidden;
-            pointer-events: none;
-        }
-
-        .speed-lines::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 200%;
-            height: 200%;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                #000 2px,
-                #000 3px
-            );
-            transform: translate(-50%, -50%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .manga-panel:hover .speed-lines::before {
-            opacity: 0.1;
-            animation: speedLineRotate 1s linear infinite;
-        }
-
-        @keyframes speedLineRotate {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-
-        /* Typography effects */
-        .manga-text {
-            font-weight: 700;
-            font-size: 1.1rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .emphasis-text {
-            font-family: 'Bangers', cursive;
-            font-size: 1.4rem;
-            color: #ff0000;
-            text-shadow: 2px 2px 0px #000;
-        }
-
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .character-panel {
-                position: relative;
-                top: auto;
-                right: auto;
-                margin: 0 auto 30px;
-            }
-            
-            .header-title {
-                font-size: 2.5rem;
-            }
-            
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Subject donut chart styling */
-        .donut-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 300px;
-            position: relative;
-        }
-
-        .donut-chart {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background: conic-gradient(
-                #00cc44 0deg 126deg,
-                #0066ff 126deg 216deg,
-                #ff0000 216deg 288deg,
-                #ff6600 288deg 324deg,
-                #9966ff 324deg 360deg
-            );
-            border: 6px solid #000;
-            position: relative;
-        }
-
-        .donut-chart::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 60%;
-            height: 60%;
-            background: #fff;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            border: 3px solid #000;
-        }
-
-        .legend {
-            position: absolute;
-            right: -150px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 0.9rem;
-            font-weight: 700;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            margin: 8px 0;
-        }
-
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #000;
-            margin-right: 10px;
-        }
-    </style>
-</head>
-<body>
-    <div class="manga-container">
-        <!-- Header Panel -->
-        <div class="header-panel">
-            <h1 class="header-title">NINJA ACADEMY</h1>
-            <p class="header-subtitle">&gt;&gt; Track your jutsu mastery across all subjects and stay on top of your ninja goals!</p>
+<div class="ml-64 p-8 bg-gray-50 min-h-screen md:ml-64 sm:ml-0">
+    <div class="max-w-7xl mx-auto">
+        <!-- Mobile Menu Toggle (only visible on small screens) -->
+        <div class="sm:block md:hidden mb-4">
+            <button id="mobile-menu-toggle" class="p-2 rounded-md bg-white shadow">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
         </div>
 
-        <!-- Character Avatar -->
-        <div class="character-panel">
-            <div class="character-avatar"></div>
+        <!-- Dashboard Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">Dashboard</h1>
+            <p class="text-gray-600 mt-2">Track your attendance across all subjects and stay on top of your goals</p>
         </div>
 
-        <!-- Main Dashboard Grid -->
-        <div class="dashboard-grid">
+        <!-- Stat Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <!-- Overall Attendance -->
-            <div class="manga-panel">
-                <div class="sfx-label">POW!</div>
-                <div class="halftone-bg"></div>
-                <div class="speed-lines"></div>
-                <p class="manga-text">Overall Attendance</p>
-                <div class="stat-number blue">82.5%</div>
-                <p class="emphasis-text">+2.1% from last week</p>
-                <div class="progress-container">
-                    <div class="progress-bar" style="width: 82.5%"></div>
+            <div class="bg-white rounded-lg shadow p-6 flex justify-between items-center">
+                <div>
+                    <h2 class="text-sm font-medium text-gray-600">Overall Attendance</h2>
+                    <div class="mt-2 flex items-end">
+                        <p class="text-3xl font-bold text-blue-600" id="overallAttendanceValue">--.--%</p>
+                    </div>
+                    <p class="text-sm text-green-600 mt-2" id="attendanceChange">--.-% from last week</p>
+                </div>
+                <div class="bg-blue-100 p-3 rounded-lg">
+                    <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2 10a8 8 0 1116 0 8 8 0 01-16 0zm6.5-4.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0zm7 0a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0zM12 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
                 </div>
             </div>
 
             <!-- Total Classes -->
-            <div class="manga-panel">
-                <div class="sfx-label">ZOOM!</div>
-                <div class="halftone-bg"></div>
-                <div class="speed-lines"></div>
-                <p class="manga-text">Total Classes</p>
-                <div class="stat-number">156</div>
-                <p class="emphasis-text">128 attended</p>
+            <div class="bg-white rounded-lg shadow p-6 flex justify-between items-center">
+                <div>
+                    <h2 class="text-sm font-medium text-gray-600">Total Classes</h2>
+                    <div class="mt-2 flex items-end">
+                        <p class="text-3xl font-bold text-gray-800" id="totalClassesValue">--</p>
+                    </div>
+                    <p class="text-sm text-blue-600 mt-2" id="classesAttended">-- attended</p>
+                </div>
+                <div class="bg-blue-100 p-3 rounded-lg">
+                    <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                    </svg>
+                </div>
             </div>
 
-            <!-- Below 75% Warning -->
-            <div class="manga-panel needs-attention">
-                <div class="sfx-label">ZAP!</div>
-                <div class="halftone-bg"></div>
-                <div class="speed-lines"></div>
-                <p class="manga-text">Below 75%</p>
-                <div class="stat-number red">2</div>
-                <p class="emphasis-text">Needs attention</p>
+            <!-- Below 75% -->
+            <div class="bg-white rounded-lg shadow p-6 flex justify-between items-center">
+                <div>
+                    <h2 class="text-sm font-medium text-gray-600">Below 75%</h2>
+                    <div class="mt-2 flex items-end">
+                        <p class="text-3xl font-bold text-red-600" id="belowThresholdValue">--</p>
+                    </div>
+                    <p class="text-sm text-red-600 mt-2">Needs attention</p>
+                </div>
+                <div class="bg-red-100 p-3 rounded-lg">
+                    <svg class="w-8 h-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
             </div>
 
             <!-- This Week -->
-            <div class="manga-panel">
-                <div class="sfx-label">BOOM!</div>
-                <div class="halftone-bg"></div>
-                <div class="speed-lines"></div>
-                <p class="manga-text">This Week</p>
-                <div class="stat-number green">18/20</div>
-                <p class="emphasis-text">90% attendance</p>
-                <div class="progress-container">
-                    <div class="progress-bar" style="width: 90%"></div>
+            <div class="bg-white rounded-lg shadow p-6 flex justify-between items-center">
+                <div>
+                    <h2 class="text-sm font-medium text-gray-600">This Week</h2>
+                    <div class="mt-2 flex items-end">
+                        <p class="text-3xl font-bold text-green-600" id="thisWeekValue">--/--</p>
+                    </div>
+                    <p class="text-sm text-green-600 mt-2" id="weekAttendancePercent">--% attendance</p>
+                </div>
+                <div class="bg-green-100 p-3 rounded-lg">
+                    <svg class="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
                 </div>
             </div>
         </div>
 
-        <!-- Chart Panel -->
-        <div class="chart-panel">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
-                <!-- Attendance Trend -->
-                <div>
-                    <h3 class="manga-text" style="font-size: 1.5rem; margin-bottom: 20px;">Attendance Trend</h3>
-                    <svg width="100%" height="300" viewBox="0 0 500 200" style="border: 3px solid #000; background: #f9f9f9;">
-                        <defs>
-                            <pattern id="grid" width="50" height="20" patternUnits="userSpaceOnUse">
-                                <path d="M 50 0 L 0 0 0 20" fill="none" stroke="#ddd" stroke-width="1"/>
-                            </pattern>
-                        </defs>
-                        <rect width="100%" height="100%" fill="url(#grid)" />
-                        
-                        <!-- Trend line -->
-                        <polyline points="50,120 100,100 150,110 200,90 250,95 300,85 350,90 400,85 450,85" 
-                                 fill="none" stroke="#0066ff" stroke-width="6"/>
-                        
-                        <!-- Data points -->
-                        <circle cx="50" cy="120" r="8" fill="#0066ff" stroke="#000" stroke-width="3"/>
-                        <circle cx="100" cy="100" r="8" fill="#0066ff" stroke="#000" stroke-width="3"/>
-                        <circle cx="150" cy="110" r="8" fill="#0066ff" stroke="#000" stroke-width="3"/>
-                        <circle cx="200" cy="90" r="8" fill="#0066ff" stroke="#000" stroke-width="3"/>
-                        <circle cx="250" cy="95" r="8" fill="#0066ff" stroke="#000" stroke-width="3"/>
-                        <circle cx="300" cy="85" r="8" fill="#0066ff" stroke="#000" stroke-width="3"/>
-                        <circle cx="350" cy="90" r="8" fill="#0066ff" stroke="#000" stroke-width="3"/>
-                        <circle cx="400" cy="85" r="8" fill="#0066ff" stroke="#000" stroke-width="3"/>
-                        <circle cx="450" cy="85" r="8" fill="#0066ff" stroke="#000" stroke-width="3"/>
-                        
-                        <!-- Labels -->
-                        <text x="50" y="190" text-anchor="middle" font-family="Noto Sans JP" font-weight="700" font-size="12">Week 1</text>
-                        <text x="150" y="190" text-anchor="middle" font-family="Noto Sans JP" font-weight="700" font-size="12">Week 3</text>
-                        <text x="250" y="190" text-anchor="middle" font-family="Noto Sans JP" font-weight="700" font-size="12">Week 5</text>
-                        <text x="350" y="190" text-anchor="middle" font-family="Noto Sans JP" font-weight="700" font-size="12">Week 7</text>
-                        <text x="450" y="190" text-anchor="middle" font-family="Noto Sans JP" font-weight="700" font-size="12">Week 9</text>
-                    </svg>
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+            <!-- Attendance Trend Chart (3 columns) -->
+            <div class="lg:col-span-3 bg-white rounded-lg shadow p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg font-semibold text-gray-800">Attendance Trend</h2>
+                    <select id="trendTimeRange" class="border rounded-md px-3 py-1 text-sm">
+                        <option value="30">Last 30 days</option>
+                        <option value="60">Last 60 days</option>
+                        <option value="90">Last 90 days</option>
+                    </select>
                 </div>
+                <div class="h-64">
+                    <canvas id="attendanceTrendChart"></canvas>
+                </div>
+            </div>
 
-                <!-- Subject-wise Attendance -->
-                <div>
-                    <h3 class="manga-text" style="font-size: 1.5rem; margin-bottom: 20px;">Subject-wise Attendance</h3>
-                    <div class="donut-container">
-                        <div class="donut-chart"></div>
-                        <div class="legend">
-                            <div class="legend-item">
-                                <div class="legend-color" style="background: #00cc44;"></div>
-                                <span>Data Structures</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color" style="background: #0066ff;"></div>
-                                <span>Computer Networks</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color" style="background: #ff0000;"></div>
-                                <span>Software Engineering</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color" style="background: #ff6600;"></div>
-                                <span>Operating Systems</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color" style="background: #9966ff;"></div>
-                                <span>Database Management</span>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Subject-wise Attendance (2 columns) -->
+            <div class="lg:col-span-2 bg-white rounded-lg shadow p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg font-semibold text-gray-800">Subject-wise Attendance</h2>
+                    <a href="/subjectManagement" class="text-blue-600 text-sm hover:underline">View All</a>
+                </div>
+                <div class="mb-6">
+                    <canvas id="subjectDonutChart" class="h-48 mx-auto"></canvas>
+                </div>
+                <div class="space-y-4" id="subjectList">
+                    <!-- Subject items will be dynamically added here -->
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        // Add dynamic animations on scroll
-        const panels = document.querySelectorAll('.manga-panel');
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', async function() {
+    let dashboardData = null;
+
+    // Mobile menu toggle functionality
+    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+    if (mobileMenuToggle) {
+        mobileMenuToggle.addEventListener('click', function() {
+            const sidebar = document.querySelector('nav');
+            const mainContent = document.querySelector('.ml-64');
+            
+            if (sidebar.classList.contains('hidden-mobile')) {
+                sidebar.classList.remove('hidden-mobile');
+                sidebar.classList.add('block-mobile');
+            } else {
+                sidebar.classList.add('hidden-mobile');
+                sidebar.classList.remove('block-mobile');
+            }
+        });
+    }
+
+    // Fetch attendance data
+    try {
+        const response = await fetch('/api/dashboard-data');
+        dashboardData = await response.json();
         
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.animation = 'panelAppear 0.6s ease-out forwards';
-                }
-            });
-        }, observerOptions);
-
-        panels.forEach(panel => {
-            observer.observe(panel);
-        });
-
-        // Add CSS for panel appear animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes panelAppear {
-                0% {
-                    opacity: 0;
-                    transform: translateY(50px) rotate(-5deg);
-                }
-                100% {
-                    opacity: 1;
-                    transform: translateY(0) rotate(0deg);
-                }
-            }
-            
-            .manga-panel {
-                opacity: 0;
-            }
-        `;
-        document.head.appendChild(style);
-
-        // Add click effects
-        panels.forEach(panel => {
-            panel.addEventListener('click', (e) => {
-                // Create explosion effect
-                const explosion = document.createElement('div');
-                explosion.style.cssText = `
-                    position: absolute;
-                    top: ${e.offsetY}px;
-                    left: ${e.offsetX}px;
-                    width: 50px;
-                    height: 50px;
-                    background: radial-gradient(circle, #ff0000, transparent);
-                    border-radius: 50%;
-                    transform: scale(0);
-                    animation: explode 0.5s ease-out forwards;
-                    pointer-events: none;
-                    z-index: 100;
-                `;
-                
-                panel.style.position = 'relative';
-                panel.appendChild(explosion);
-                
-                setTimeout(() => {
-                    explosion.remove();
-                }, 500);
-            });
-        });
-
-        // Add explosion animation
-        const explosionStyle = document.createElement('style');
-        explosionStyle.textContent = `
-            @keyframes explode {
-                0% {
-                    transform: scale(0);
-                    opacity: 1;
-                }
-                100% {
-                    transform: scale(2);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(explosionStyle);
-
-        // Animate progress bars on load
-        window.addEventListener('load', () => {
-            const progressBars = document.querySelectorAll('.progress-bar');
-            progressBars.forEach(bar => {
-                const width = bar.style.width;
-                bar.style.width = '0%';
-                setTimeout(() => {
-                    bar.style.width = width;
-                }, 500);
-            });
-        });
-
-        // Add random manga sound effects
-        const sfxSounds = ['POW!', 'BAM!', 'ZAP!', 'BOOM!', 'WHOOSH!', 'CRASH!', 'BANG!'];
+        // Update dashboard stats
+        updateDashboardStats(dashboardData);
         
-        setInterval(() => {
-            const randomPanel = panels[Math.floor(Math.random() * panels.length)];
-            const sfxElement = randomPanel.querySelector('.sfx-label');
-            const originalText = sfxElement.textContent;
-            
-            sfxElement.textContent = sfxSounds[Math.floor(Math.random() * sfxSounds.length)];
-            sfxElement.style.animation = 'pulse 0.5s ease-in-out';
-            
-            setTimeout(() => {
-                sfxElement.textContent = originalText;
-                sfxElement.style.animation = '';
-            }, 1000);
-        }, 5000);
-    </script>
-</body>
-</html>
+        // Initialize charts
+        initAttendanceTrendChart(dashboardData.weeklyAttendance);
+        initSubjectDonutChart(dashboardData.subjectAttendance);
+        
+        // Populate subject list
+        populateSubjectList(dashboardData.subjectAttendance);
+        
+        // Add event listener for time range dropdown
+        document.getElementById('trendTimeRange').addEventListener('change', function(e) {
+            const days = parseInt(e.target.value);
+            filterAttendanceTrend(days, dashboardData.weeklyAttendance);
+        });
+    } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        
+        // Use fallback values if API fails
+        updateDashboardStats({
+            overallAttendance: 0,
+            weeklyChange: 0,
+            totalClasses: 0,
+            classesAttended: 0,
+            belowThreshold: 0,
+            thisWeek: {
+                attended: 0,
+                total: 0,
+                percentage: 0
+            }
+        });
+    }
+
+    // Handle window resize for responsive charts
+    window.addEventListener('resize', function() {
+        if (dashboardData) {
+            initAttendanceTrendChart(dashboardData.weeklyAttendance);
+            initSubjectDonutChart(dashboardData.subjectAttendance);
+        }
+    });
+});
+
+// Function to filter attendance trend by days
+function filterAttendanceTrend(days, weeklyData) {
+    // Calculate how many weeks to show based on days
+    const weeksToShow = Math.ceil(days / 7);
+    const filteredData = weeklyData.slice(-weeksToShow);
+    
+    // Reinitialize the chart with filtered data
+    initAttendanceTrendChart(filteredData);
+}
+
+function updateDashboardStats(data) {
+    // Update overall attendance
+    document.getElementById('overallAttendanceValue').textContent = `${data.overallAttendance.toFixed(1)}%`;
+    document.getElementById('attendanceChange').textContent = `${data.weeklyChange >= 0 ? '+' : ''}${data.weeklyChange.toFixed(1)}% from last week`;
+    
+    // Update total classes
+    document.getElementById('totalClassesValue').textContent = data.totalClasses;
+    document.getElementById('classesAttended').textContent = `${data.classesAttended} attended`;
+    
+    // Update below threshold
+    document.getElementById('belowThresholdValue').textContent = data.belowThreshold;
+    
+    // Update this week
+    document.getElementById('thisWeekValue').textContent = `${data.thisWeek.attended}/${data.thisWeek.total}`;
+    document.getElementById('weekAttendancePercent').textContent = `${data.thisWeek.percentage}% attendance`;
+}
+
+function initAttendanceTrendChart(weeklyData) {
+    const ctx = document.getElementById('attendanceTrendChart').getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: weeklyData.map(item => `Week ${item.week}`),
+            datasets: [{
+                label: 'Attendance %',
+                data: weeklyData.map(item => item.percentage),
+                borderColor: 'rgb(59, 130, 246)',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                tension: 0.3,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    min: 70,
+                    max: 100,
+                    ticks: {
+                        stepSize: 5
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+}
+
+function initSubjectDonutChart(subjectData) {
+    const ctx = document.getElementById('subjectDonutChart').getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: subjectData.map(item => item.name),
+            datasets: [{
+                data: subjectData.map(item => item.percentage),
+                backgroundColor: [
+                    'rgb(16, 185, 129)',  // green
+                    'rgb(59, 130, 246)',  // blue
+                    'rgb(239, 68, 68)',   // red
+                    'rgb(139, 92, 246)',  // purple
+                    'rgb(245, 158, 11)'   // orange
+                ],
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+}
+
+function populateSubjectList(subjectData) {
+    const subjectList = document.getElementById('subjectList');
+    subjectList.innerHTML = '';
+    
+    subjectData.forEach(subject => {
+        const item = document.createElement('div');
+        
+        // Determine color based on percentage
+        let dotColor = 'bg-green-500';
+        if (subject.percentage < 75) {
+            dotColor = 'bg-red-500';
+        } else if (subject.percentage < 85) {
+            dotColor = 'bg-orange-500';
+        }
+        
+        item.innerHTML = `
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full ${dotColor} mr-3"></span>
+                    <span class="text-gray-800">${subject.name}</span>
+                </div>
+                <span class="font-medium">${subject.percentage}%</span>
+            </div>
+        `;
+        
+        subjectList.appendChild(item);
+    });
+}
+</script>
+
+<style>
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .ml-64 {
+        margin-left: 0;
+    }
+    
+    nav {
+        display: none;
+    }
+    
+    nav.block-mobile {
+        display: block;
+        position: fixed;
+        z-index: 50;
+        width: 100%;
+        height: 100%;
+    }
+    
+    nav.hidden-mobile {
+        display: none;
+    }
+}
+</style>
+
+

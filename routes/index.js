@@ -13,9 +13,49 @@ router.get('/dashboard', isLoggedIn, (req, res) => {
 });
 
 router.get('/subjectManagement', isLoggedIn, async (req, res) => {
-    let user = await userModal.findOne({email: req.user.email})
-    await user.populate('courses');
-    res.render('subjectManagement', {user});
+    let user = await userModal.findOne({email: req.user.email}).populate('courses')
+    let attendances = await attendanceModel.find({user: user._id}).populate('course')
+    let courseStatsMap = {};
+    attendances.forEach(att => {
+        const id = att.course._id.toString();
+        if (!courseStatsMap[id]) {
+            courseStatsMap[id] = {
+                course: att.course,
+                totalClasses: 0,
+                classesAttended: 0
+            };
+        }
+        courseStatsMap[id].totalClasses += 1;
+        if (att.status === 'present') {
+            courseStatsMap[id].classesAttended += 1;
+        }
+    });
+
+    // Ensure all user courses are included, even those with zero attendance
+    user.courses.forEach(course => {
+        const id = course._id.toString();
+        if (!courseStatsMap[id]) {
+            courseStatsMap[id] = {
+                course: course,
+                totalClasses: 0,
+                classesAttended: 0
+            };
+        }
+    });
+
+    const courseStats = Object.values(courseStatsMap).map(entry => {
+        const { course, classesAttended, totalClasses } = entry;
+        const attendancePercentage = totalClasses > 0
+            ? Math.round((classesAttended / totalClasses) * 100)
+            : 0;
+        return {
+            ...course.toObject(),
+            attendancePercentage,
+            classesAttended,
+            totalClasses
+        };
+    });
+    res.render('subjectManagement', {user , courses: courseStats, attendances});
 });
 
 router.get('/attendanceInput', isLoggedIn, async (req, res) => {

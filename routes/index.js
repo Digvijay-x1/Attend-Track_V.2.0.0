@@ -118,4 +118,64 @@ router.get('/analytics', isLoggedIn, async (req, res) => {
     });
   });
 
+  router.get('/calculator', isLoggedIn, async (req, res) => {
+    let user = await userModal.findOne({email: req.user.email})
+    await user.populate('courses'); 
+    
+    // Initialize variables with default values to avoid 'not defined' errors
+    const defaultValues = {
+      totalClasses: 0,
+      totalPresentClasses: 0, 
+      currentAttendance: 0,
+      targetAttendance: 0,
+      estimatedFutureClasses: 0,
+      totalClassesInFuture: 0,
+      totalPresentClassesInFuture: 0,
+      classesNeeded: 0,
+      canMissClasses: 0
+    };
+    
+    res.render('calculator', {user, ...defaultValues});
+  });
+
+  router.post('/calculate', isLoggedIn, async (req, res) => {
+    let user = await userModal.findOne({email: req.user.email})
+    await user.populate('courses');
+    let course = user.courses.find(course => course.title === req.body.subject)
+    let totalClasses = await attendanceModel.countDocuments({user: user._id, course: course._id})
+    let totalPresentClasses = await attendanceModel.countDocuments({user: user._id, course: course._id, status: 'present'})
+    let currentAttendance = totalClasses > 0 ? (totalPresentClasses / totalClasses) * 100 : 0
+    let targetAttendance = parseFloat(req.body['target-attendance'])
+    let estimatedFutureClasses = parseInt(req.body['estimated-future-classes'])
+    let totalClassesInFuture = totalClasses + parseInt(estimatedFutureClasses)
+    let totalPresentClassesInFuture = (targetAttendance * totalClassesInFuture) / 100
+    let classesNeeded = Math.max(0, Math.ceil(totalPresentClassesInFuture - totalPresentClasses))
+    
+    // Calculate how many classes can be missed
+    let canMissClasses = 0;
+    if (currentAttendance > targetAttendance) {
+      // If already above target, calculate how many can be missed while staying above target
+      let minimumPresent = Math.ceil((targetAttendance * totalClassesInFuture) / 100);
+      canMissClasses = Math.floor(totalPresentClasses - minimumPresent);
+      if (canMissClasses < 0) canMissClasses = 0;
+    } else {
+      canMissClasses = Math.floor(estimatedFutureClasses - classesNeeded);
+      if (canMissClasses < 0) canMissClasses = 0;
+    }
+    
+    res.render('calculator', {
+      user, 
+      course,
+      totalClasses, 
+      totalPresentClasses, 
+      currentAttendance, 
+      targetAttendance, 
+      estimatedFutureClasses, 
+      totalClassesInFuture, 
+      totalPresentClassesInFuture, 
+      classesNeeded,
+      canMissClasses
+    });
+  });
+
 module.exports = router;

@@ -7,74 +7,213 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-50 text-slate-700 font-sans leading-relaxed">
-    <div class="max-w-md mx-auto p-6">
+    <div class="max-w-5xl mx-auto p-6">
         <div class="flex items-center gap-3 mb-6">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
-            <h1 class="text-xl font-semibold text-slate-800">Attendance Calculator</h1>
+            <h1 class="text-xl font-semibold text-slate-800">Attendance Calculators</h1>
         </div>
         
-        <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
-            <form action="/calculate" method="post">
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Subject</label>
-                    <div class="relative">
-                        <select name="subject" id="subject" class="w-full px-3 py-2 appearance-none bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            <% user.courses.forEach(course => { %>
-                                <option value="<%= course.title %>" <%= (typeof course !== 'undefined' && course && course.title === course.title) ? 'selected' : '' %>><%= course.title %></option> 
-                            <% }) %>
-                        </select>
-                        <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                            <svg class="h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                            </svg>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Original Calculator -->
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <h2 class="text-lg font-medium text-slate-800 mb-4">Detailed Calculator</h2>
+                <form action="/calculate" method="post">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Subject</label>
+                        <div class="relative">
+                            <select name="subject" id="subject" class="w-full px-3 py-2 appearance-none bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <% user.courses.forEach(course => { %>
+                                    <option value="<%= course.title %>" <%= (typeof course !== 'undefined' && course && course.title === course.title) ? 'selected' : '' %>><%= course.title %></option> 
+                                <% }) %>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                <svg class="h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="mb-4">
-                    <label for="target-attendance" class="block text-sm font-medium text-slate-700 mb-1">Target Attendance (%)</label>
-                    <input type="number" id="target-attendance" name="target-attendance" value="<%= typeof targetAttendance !== 'undefined' ? targetAttendance : 75 %>" 
-                           placeholder="75" min="0" max="100" class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                
-                <div class="mb-6">
-                    <label for="estimated-future-classes" class="block text-sm font-medium text-slate-700 mb-1">Estimated Future Classes</label>
-                    <div class="relative">
-                        <input type="number" id="estimated-future-classes" name="estimated-future-classes" value="<%= typeof estimatedFutureClasses !== 'undefined' ? estimatedFutureClasses : 10 %>"
-                               placeholder="10" min="1" class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                        </div>
+                    
+                    <div class="mb-4">
+                        <label for="target-attendance" class="block text-sm font-medium text-slate-700 mb-1">Target Attendance (%)</label>
+                        <input type="number" id="target-attendance" name="target-attendance" value="<%= typeof targetAttendance !== 'undefined' ? targetAttendance : 75 %>" 
+                               placeholder="75" min="0" max="100" class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
-                    <p class="text-xs text-slate-500 mt-1">How many more classes are expected in this subject?</p>
-                </div>
-                
-                <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                    Calculate Required Classes
-                </button>
-            </form>
+                    
+                    <div class="mb-6">
+                        <label for="estimated-future-classes" class="block text-sm font-medium text-slate-700 mb-1">Estimated Future Classes</label>
+                        <div class="relative">
+                            <input type="number" id="estimated-future-classes" name="estimated-future-classes" value="<%= typeof estimatedFutureClasses !== 'undefined' ? estimatedFutureClasses : 10 %>"
+                                   placeholder="10" min="1" class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1">How many more classes are expected in this subject?</p>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                        Calculate Required Classes
+                    </button>
+                </form>
 
-            <% if (classesNeeded !== undefined && classesNeeded !== null) { %>
-            <div class="mt-6 bg-blue-50 border border-blue-100 rounded-lg p-4">
-                <h3 class="text-sm font-medium text-blue-800 mb-2">Results for <%= typeof course !== 'undefined' && course ? course.title : 'this subject' %></h3>
-                <p class="text-sm mb-2">Current: <span class="font-semibold"><%= currentAttendance ? currentAttendance.toFixed(1) : 0 %>%</span></p>
-                
-                <% if (classesNeeded > 0) { %>
-                    <p class="text-base font-medium text-blue-900">You need to attend <span id="result" class="font-bold"><%= classesNeeded %></span> more classes</p>
-                <% } else { %>
-                    <p class="text-base font-medium text-green-800">You've already reached your target attendance!</p>
-                <% } %>
-                
-                <% if (typeof canMissClasses !== 'undefined' && canMissClasses > 0) { %>
-                    <p class="text-sm text-slate-600 mt-1">You can miss up to <span class="font-medium"><%= canMissClasses %></span> classes</p>
+                <% if (classesNeeded !== undefined && classesNeeded !== null) { %>
+                <div class="mt-6 bg-blue-50 border border-blue-100 rounded-lg p-4">
+                    <h3 class="text-sm font-medium text-blue-800 mb-2">Results for <%= typeof course !== 'undefined' && course ? course.title : 'this subject' %></h3>
+                    <p class="text-sm mb-2">Current: <span class="font-semibold"><%= currentAttendance ? currentAttendance.toFixed(1) : 0 %>%</span></p>
+                    
+                    <% if (classesNeeded > 0) { %>
+                        <p class="text-base font-medium text-blue-900">You need to attend <span id="result" class="font-bold"><%= classesNeeded %></span> more classes</p>
+                    <% } else { %>
+                        <p class="text-base font-medium text-green-800">You've already reached your target attendance!</p>
+                    <% } %>
+                    
+                    <% if (typeof canMissClasses !== 'undefined' && canMissClasses > 0) { %>
+                        <p class="text-sm text-slate-600 mt-1">You can miss up to <span class="font-medium"><%= canMissClasses %></span> classes</p>
+                    <% } %>
+                </div>
                 <% } %>
             </div>
-            <% } %>
+
+            <!-- Quick Calculator -->
+            <div>
+                <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 mb-6">
+                    <div class="flex items-center gap-2 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                        <h2 class="text-lg font-medium text-slate-800">Quick Calculator</h2>
+                    </div>
+
+                    <div class="bg-blue-50 rounded-lg p-4 mb-4">
+                        <h3 class="text-sm font-medium text-slate-700 mb-2">Current Percentage</h3>
+                        <div class="flex gap-2 mb-2">
+                            <input type="number" id="attended" placeholder="Attended" class="flex-1 px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <input type="number" id="total" placeholder="Total" class="flex-1 px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div class="text-right text-sm font-medium">
+                            Percentage: <span id="current-percentage" class="text-blue-700">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-purple-50 rounded-lg p-4 mb-4">
+                        <h3 class="text-sm font-medium text-purple-800 mb-2">What If Scenarios</h3>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex justify-between">
+                                <span>If I attend next 5 classes</span>
+                                <span id="attend-5" class="font-medium text-green-600">+0%</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span>If I miss next 2 classes</span>
+                                <span id="miss-2" class="font-medium text-red-600">-0%</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span>If I attend next 10 classes</span>
+                                <span id="attend-10" class="font-medium text-green-600">+0%</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-green-50 rounded-lg p-4">
+                        <h3 class="text-sm font-medium text-green-800 mb-2">Goal Tracker</h3>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex justify-between">
+                                <span>To reach 75%:</span>
+                                <span id="goal-75" class="font-medium text-orange-500">Need 0 more</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span>To reach 80%:</span>
+                                <span id="goal-80" class="font-medium text-orange-500">Need 0 more</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span>To reach 85%:</span>
+                                <span id="goal-85" class="font-medium text-orange-500">Need 0 more</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <script>
+        // Quick Calculator Logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const attendedInput = document.getElementById('attended');
+            const totalInput = document.getElementById('total');
+            const currentPercentage = document.getElementById('current-percentage');
+            const attend5 = document.getElementById('attend-5');
+            const miss2 = document.getElementById('miss-2');
+            const attend10 = document.getElementById('attend-10');
+            const goal75 = document.getElementById('goal-75');
+            const goal80 = document.getElementById('goal-80');
+            const goal85 = document.getElementById('goal-85');
+            
+            // Future classes assumption
+            const futureClasses = 20;
+            
+            function calculateAll() {
+                const attended = parseInt(attendedInput.value) || 0;
+                const total = parseInt(totalInput.value) || 0;
+                
+                // Avoid division by zero
+                if (total === 0) {
+                    currentPercentage.textContent = '0%';
+                    attend5.textContent = '+0%';
+                    miss2.textContent = '-0%';
+                    attend10.textContent = '+0%';
+                    goal75.textContent = 'Need 0 more';
+                    goal80.textContent = 'Need 0 more';
+                    goal85.textContent = 'Need 0 more';
+                    return;
+                }
+                
+                // Current percentage
+                const current = (attended / total) * 100;
+                currentPercentage.textContent = current.toFixed(2) + '%';
+                
+                // What if scenarios
+                const attend5Percent = ((attended + 5) / (total + 5)) * 100;
+                const miss2Percent = (attended / (total + 2)) * 100;
+                const attend10Percent = ((attended + 10) / (total + 10)) * 100;
+                
+                const attend5Change = attend5Percent - current;
+                const miss2Change = miss2Percent - current;
+                const attend10Change = attend10Percent - current;
+                
+                attend5.textContent = (attend5Change >= 0 ? '+' : '') + attend5Change.toFixed(1) + '%';
+                attend5.className = attend5Change >= 0 ? 'font-medium text-green-600' : 'font-medium text-red-600';
+                
+                miss2.textContent = (miss2Change >= 0 ? '+' : '') + miss2Change.toFixed(1) + '%';
+                miss2.className = miss2Change >= 0 ? 'font-medium text-green-600' : 'font-medium text-red-600';
+                
+                attend10.textContent = (attend10Change >= 0 ? '+' : '') + attend10Change.toFixed(1) + '%';
+                attend10.className = attend10Change >= 0 ? 'font-medium text-green-600' : 'font-medium text-red-600';
+                
+                // Goal tracker
+                function classesNeededForGoal(goal) {
+                    // Formula: (goal * (total + x) - 100 * attended) / (100 - goal) = x
+                    // Where x is the number of classes needed to attend
+                    const classesNeeded = Math.ceil((goal * total - 100 * attended) / (100 - goal));
+                    return Math.max(0, classesNeeded);
+                }
+                
+                const needed75 = classesNeededForGoal(75);
+                const needed80 = classesNeededForGoal(80);
+                const needed85 = classesNeededForGoal(85);
+                
+                goal75.textContent = needed75 > futureClasses ? 'Not possible' : `Need ${needed75} more`;
+                goal80.textContent = needed80 > futureClasses ? 'Not possible' : `Need ${needed80} more`;
+                goal85.textContent = needed85 > futureClasses ? 'Not possible' : `Need ${needed85} more`;
+            }
+            
+            attendedInput.addEventListener('input', calculateAll);
+            totalInput.addEventListener('input', calculateAll);
+        });
+    </script>
 </body>
 </html>

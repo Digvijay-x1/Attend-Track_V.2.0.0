@@ -135,7 +135,54 @@ router.get('/analytics', isLoggedIn, async (req, res) => {
       canMissClasses: 0
     };
     
-    res.render('calculator', {user, ...defaultValues});
+    // Fetch attendance data for each course
+    const courseData = [];
+    const targetPercentage = 75; // Default target percentage
+    const estimatedFutureClasses = 20; // Default future classes assumption
+    
+    for (const course of user.courses) {
+      const totalClasses = await attendanceModel.countDocuments({user: user._id, course: course._id});
+      const totalPresentClasses = await attendanceModel.countDocuments({
+        user: user._id, 
+        course: course._id, 
+        status: 'present'
+      });
+      
+      const percentage = totalClasses > 0 ? Math.round((totalPresentClasses / totalClasses) * 100) : 0;
+      
+      // Calculate classes needed to reach target
+      let needsForTarget = 0;
+      if (percentage < targetPercentage) {
+        // Formula: (target * (total + x) - 100 * present) / (100 - target) = x
+        needsForTarget = Math.ceil((targetPercentage * totalClasses - 100 * totalPresentClasses) / (100 - targetPercentage));
+        if (needsForTarget < 0) needsForTarget = 0;
+      }
+      
+      // Calculate how many classes can be missed while maintaining target
+      let canMiss = 0;
+        
+      
+      const targetDecimal = targetPercentage / 100;
+      canMiss = Math.floor(totalClasses + estimatedFutureClasses - (totalPresentClasses / targetDecimal));
+      
+      // We can't miss more than the future classes, and we can't miss negative classes
+      canMiss = estimatedFutureClasses - canMiss;
+      if (canMiss < 0) canMiss = 0;
+      if (canMiss > estimatedFutureClasses) canMiss = estimatedFutureClasses;
+      
+      courseData.push({
+        id: course._id,
+        title: course.title,
+        totalClasses,
+        attendedClasses: totalPresentClasses,
+        percentage,
+        canMiss,
+        needsForTarget,
+        targetAchieved: percentage >= targetPercentage
+      });
+    }
+    
+    res.render('calculator', {user, courseData, ...defaultValues});
   });
 
   router.post('/calculate', isLoggedIn, async (req, res) => {
@@ -153,14 +200,62 @@ router.get('/analytics', isLoggedIn, async (req, res) => {
     
     // Calculate how many classes can be missed
     let canMissClasses = 0;
-    if (currentAttendance > targetAttendance) {
-      // If already above target, calculate how many can be missed while staying above target
-      let minimumPresent = Math.ceil((targetAttendance * totalClassesInFuture) / 100);
-      canMissClasses = Math.floor(totalPresentClasses - minimumPresent);
-      if (canMissClasses < 0) canMissClasses = 0;
-    } else {
-      canMissClasses = Math.floor(estimatedFutureClasses - classesNeeded);
-      if (canMissClasses < 0) canMissClasses = 0;
+    
+    
+    
+    const targetDecimal = targetAttendance / 100;
+    canMissClasses = Math.floor(totalClasses + estimatedFutureClasses - (totalPresentClasses / targetDecimal));
+    
+    // We can't miss more than the future classes, and we can't miss negative classes
+    canMissClasses = estimatedFutureClasses - canMissClasses;
+    if (canMissClasses < 0) canMissClasses = 0;
+    if (canMissClasses > estimatedFutureClasses) canMissClasses = estimatedFutureClasses;
+    
+    // Fetch attendance data for each course for the subject-wise quick calculator
+    const courseData = [];
+    const targetPercentage = 75; // Default target percentage
+    const defaultEstimatedFutureClasses = 20; // Default future classes assumption
+    
+    for (const c of user.courses) {
+      const cTotalClasses = await attendanceModel.countDocuments({user: user._id, course: c._id});
+      const cTotalPresentClasses = await attendanceModel.countDocuments({
+        user: user._id, 
+        course: c._id, 
+        status: 'present'
+      });
+      
+      const percentage = cTotalClasses > 0 ? Math.round((cTotalPresentClasses / cTotalClasses) * 100) : 0;
+      
+      // Calculate classes needed to reach target
+      let needsForTarget = 0;
+      if (percentage < targetPercentage) {
+        // Formula: (target * (total + x) - 100 * present) / (100 - target) = x
+        needsForTarget = Math.ceil((targetPercentage * cTotalClasses - 100 * cTotalPresentClasses) / (100 - targetPercentage));
+        if (needsForTarget < 0) needsForTarget = 0;
+      }
+      
+      // Calculate how many classes can be missed while maintaining target
+      let canMiss = 0;
+      
+  
+      const targetDecimal = targetPercentage / 100;
+      canMiss = Math.floor(cTotalClasses + defaultEstimatedFutureClasses - (cTotalPresentClasses / targetDecimal));
+      
+      // We can't miss more than the future classes, and we can't miss negative classes
+      canMiss = defaultEstimatedFutureClasses - canMiss;
+      if (canMiss < 0) canMiss = 0;
+      if (canMiss > defaultEstimatedFutureClasses) canMiss = defaultEstimatedFutureClasses;
+      
+      courseData.push({
+        id: c._id,
+        title: c.title,
+        totalClasses: cTotalClasses,
+        attendedClasses: cTotalPresentClasses,
+        percentage,
+        canMiss,
+        needsForTarget,
+        targetAchieved: percentage >= targetPercentage
+      });
     }
     
     res.render('calculator', {
@@ -174,7 +269,8 @@ router.get('/analytics', isLoggedIn, async (req, res) => {
       totalClassesInFuture, 
       totalPresentClassesInFuture, 
       classesNeeded,
-      canMissClasses
+      canMissClasses,
+      courseData
     });
   });
 

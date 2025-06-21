@@ -138,6 +138,51 @@
                 </div>
             </div>
         </div>
+
+        <!-- Subject-wise Quick Calculations -->
+        <div class="mt-8">
+            <div class="flex items-center gap-3 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2" />
+                </svg>
+                <h2 class="text-lg font-medium text-slate-800">Subject-wise Quick Calculations</h2>
+            </div>
+            <div class="flex justify-between gap-3 mb-4">
+                <p class="text-sm text-slate-600 mb-4">See how many classes you need for each subject</p>
+                <p class="text-sm text-slate-600 mb-4"> * minimum 10 classes are required for proper calculate </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <% if (typeof courseData !== 'undefined' && courseData.length > 0) { %>
+                    <% courseData.forEach(course => { %>
+                        <div class="bg-white rounded-lg border border-slate-200 overflow-hidden">
+                            <div class="p-4 flex justify-between items-center">
+                                <h3 class="font-medium"><%= course.title %></h3>
+                                <span class="px-2 py-1 rounded-full text-sm font-medium <%= course.percentage >= 75 ? 'bg-green-100 text-green-800' : course.percentage >= 70 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800' %>">
+                                    <%= course.percentage %>%
+                                </span>
+                            </div>
+                            <div class="px-4 pb-4">
+                                <p class="text-sm text-slate-500">Current: <span class="font-medium"><%= course.attendedClasses %>/<%= course.totalClasses %></span></p>
+                                
+                                <div class="flex justify-between mt-2 text-sm">
+                                    <span>For 75%:</span>
+                                    <% if (course.targetAchieved) { %>
+                                        <span class="text-green-600 font-medium">Already achieved ✓</span>
+                                    <% } else { %>
+                                        <span class="text-red-600 font-medium">Need <%= course.needsForTarget %> more</span>
+                                    <% } %>
+                                </div>
+                                
+                                <div class="flex justify-between mt-1 text-sm">
+                                    <span>Can miss:</span>
+                                    <span class="font-medium"><%= course.canMiss %> classes</span>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } %>
+            </div>
+        </div>
     </div>
 
     <script>

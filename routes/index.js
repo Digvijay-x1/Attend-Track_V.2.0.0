@@ -3,13 +3,15 @@ const router = express.Router();
 const  isLoggedIn = require('../middlewares/isLoggedIn');
 const userModal = require('../models/user');
 const attendanceModel = require('../models/attendance');
+const upload = require('../config/multer');
 
 router.get('/', (req, res) => {
     res.render('index');
 });
 
-router.get('/dashboard', isLoggedIn, (req, res) => {
-    res.render('dashboard');
+router.get('/dashboard', isLoggedIn, async (req, res) => {
+  let user = await userModal.findOne({email: req.user.email})
+  res.render('dashboard', {user});
 });
 
 router.get('/subjectManagement', isLoggedIn, async (req, res) => {
@@ -273,5 +275,38 @@ router.get('/analytics', isLoggedIn, async (req, res) => {
       courseData
     });
   });
+
+  router.get('/profile', isLoggedIn, async (req, res) => {
+    let user = await userModal.findOne({email: req.user.email})
+    res.render('profile', {user})
+  })
+
+  router.post('/profile' , isLoggedIn , upload.single('profilePicture') , async (req,res)=>{
+    let user = await userModal.findOne({email: req.user.email})
+    
+    // Only update profile picture if a file was uploaded
+    if (req.file) {
+      user.profilePicture = req.file.buffer
+    }
+    
+    // Update other fields
+    if (req.body.description) {
+      user.description = req.body.description
+    }
+    
+    if (req.body.username) {
+      user.username = req.body.username
+    }
+    
+    await user.save()  
+    
+    res.render('profile', {user})
+})
+
+router.get('/alerts', isLoggedIn, async (req, res) => {
+  let user = await userModal.findOne({email: req.user.email})
+  res.render('alert', {user})
+})
+
 
 module.exports = router;

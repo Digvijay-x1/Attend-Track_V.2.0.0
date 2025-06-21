@@ -30,6 +30,12 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 
+// Add middleware to make path available to all templates
+app.use((req, res, next) => {
+    res.locals.path = req.path;
+    next();
+});
+
 app.use('/users', usersRouter);
 app.use('/courses', coursesRouter);
 app.use('/attendances', attendancesRouter);

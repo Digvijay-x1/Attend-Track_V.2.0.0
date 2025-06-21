@@ -28,9 +28,11 @@ const userSchema =  mongoose.Schema({
         required: true,
         unique: true
     },
-    profilePicture: {
+    profilePicture: Buffer,
+    description: {
         type: String,
         default: '',
+        maxlength: 200,
     },
     courses: [{
         type: mongoose.Schema.Types.ObjectId,

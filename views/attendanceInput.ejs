@@ -1,3 +1,5 @@
+<%- include('navbar') %>    
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,27 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Attendance Input</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .popup-form {
-            display: none;
-        }
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 8px;
-        }
-        .dot-present {
-            background-color: #10b981;
-        }
-        .dot-absent {
-            background-color: #ef4444;
-        }
-    </style>
+
 </head>
-<body class="bg-gray-50 min-h-screen p-6">
-    <div class="max-w-6xl mx-auto">
+<body class="bg-gray-50 min-h-screen p-6" style="padding-left: 15%">
+    <div class="max-w-6xl mx-auto main-container">
         <!-- Header -->
         <div class="mb-8">
             <h1 class="text-4xl font-bold text-gray-900 mb-2">Attendance Input</h1>

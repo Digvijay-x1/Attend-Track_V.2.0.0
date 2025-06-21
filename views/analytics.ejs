@@ -1,28 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analytics Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .progress-bar {
-            height: 8px;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            transition: width 0.3s ease;
-        }
-        
-        .progress-green { background-color: #10b981; }
-        .progress-red { background-color: #ef4444; }
-        .progress-orange { background-color: #f59e0b; }
-    </style>
-</head>
-<body class="bg-gray-50 min-h-screen">
+<%- include('navbar') %>    
+
+
+
+
+<body class="bg-gray-50 min-h-screen" style="padding-left: 15%;">
     <div class="max-w-7xl mx-auto p-6">
         <!-- Header -->
         <div class="flex justify-between items-center mb-8">
@@ -189,4 +170,3 @@
         </div>
     </div>
 </body>
-</html>

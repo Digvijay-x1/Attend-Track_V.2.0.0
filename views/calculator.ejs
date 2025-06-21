@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Attendance Calculator</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-slate-50 text-slate-700 font-sans leading-relaxed">
+<%- include('navbar') %>    
+
     <div class="max-w-5xl mx-auto p-6">
         <div class="flex items-center gap-3 mb-6">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -260,5 +253,3 @@
             totalInput.addEventListener('input', calculateAll);
         });
     </script>
-</body>
-</html>

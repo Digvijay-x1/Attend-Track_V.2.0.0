@@ -4,558 +4,291 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scatch - Login & Register</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-out',
+                        'slide-up': 'slideUp 0.6s ease-out',
+                        'bounce-gentle': 'bounceGentle 2s infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(100%)' },
+                            '100%': { transform: 'translateY(0)' }
+                        },
+                        bounceGentle: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800&display=swap");
-
-        *,
-        *::before,
-        *::after {
-            padding: 0;
-            margin: 0;
-            box-sizing: border-box;
+        body { font-family: 'Inter', sans-serif; }
+        
+        .form-transition {
+            transition: all 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
         }
-
-        body,
-        input {
-            font-family: "Poppins", sans-serif;
+        
+        .carousel-transition {
+            transition: all 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
         }
-
-        main {
-            width: 100%;
-            min-height: 100vh;
-            overflow: hidden;
-            background-color: #3b82f6;
-            padding: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        
+        .input-focus:focus {
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
-
-        .box {
-            position: relative;
-            width: 100%;
-            max-width: 1020px;
-            height: 640px;
-            background-color: #ffffff;
-            border-radius: 3.3rem;
-            box-shadow: 0 60px 40px -30px rgba(0, 0, 0, 0.27);
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6, #3b82f6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-
-        .inner-box {
-            position: absolute;
-            width: calc(100% - 4.1rem);
-            height: calc(100% - 4.1rem);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .forms-wrap {
-            position: absolute;
-            height: 100%;
-            width: 45%;
-            top: 0;
-            left: 0;
-            display: grid;
-            grid-template-columns: 1fr;
-            grid-template-rows: 1fr;
-            transition: 0.2s ease-in-out;
-        }
-
-        form {
-            max-width: 370px;
-            width: 100%;
-            margin: 0 auto;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-evenly;
-            grid-column: 1 / 2;
-            grid-row: 1 / 2;
-            transition: opacity 0.02s 0.1s;
-        }
-
-        form.sign-up-form {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1rem;
-        }
-
-        .logo h4 {
-            font-size: 2.5rem;
-            font-weight: 600;
-            color: #151111;
-        }
-
-        .logo .brand-name {
-            color: #3b82f6;
-            font-weight: 700;
-        }
-
-        .heading h2 {
-            font-size: 2.5rem;
-            font-weight: 600;
-            color: #151111;
-            margin-bottom: 0.5rem;
-        }
-
-        .heading h6 {
-            color: #bababa;
-            font-weight: 400;
-            font-size: 0.9rem;
-            display: inline;
-        }
-
-        .toggle {
-            color: #3b82f6;
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: 0.3s;
-            margin-left: 5px;
-        }
-
-        .toggle:hover {
-            color: #1d4ed8;
-        }
-
-        .input-wrap {
-            position: relative;
-            height: 3rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .input-field {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: none;
-            border: none;
-            outline: none;
-            border-bottom: 1px solid #bbb;
-            padding: 0;
-            font-size: 0.95rem;
-            color: #151111;
-            transition: 0.4s;
-        }
-
-        label {
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 0.95rem;
-            color: #bbb;
-            pointer-events: none;
-            transition: 0.4s;
-        }
-
-        .input-field.active {
-            border-bottom-color: #3b82f6;
-        }
-
-        .input-field.active + label {
-            font-size: 0.75rem;
-            top: -2px;
-            color: #3b82f6;
-        }
-
-        .sign-btn {
-            display: inline-block;
-            width: 100%;
-            height: 43px;
-            background-color: #3b82f6;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-            border-radius: 2rem;
-            font-size: 0.9rem;
-            font-weight: 500;
-            margin-bottom: 1rem;
-            transition: 0.3s;
-        }
-
-        .sign-btn:hover {
-            background-color: #1d4ed8;
-            transform: translateY(-2px);
-        }
-
-        .text {
-            color: #bbb;
-            font-size: 0.8rem;
-            text-align: center;
-        }
-
-        .text a {
-            color: #3b82f6;
-            transition: 0.3s;
-            text-decoration: none;
-        }
-
-        .text a:hover {
-            color: #1d4ed8;
-        }
-
-        main.sign-up-mode form.sign-in-form {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        main.sign-up-mode form.sign-up-form {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        main.sign-up-mode .forms-wrap {
-            left: 55%;
-        }
-
-        main.sign-up-mode .carousel {
-            left: 0%;
-        }
-
-        .carousel {
-            position: absolute;
-            height: 100%;
-            width: 55%;
-            left: 45%;
-            top: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 2rem;
-            display: grid;
-            grid-template-rows: auto 1fr;
-            padding-bottom: 2rem;
-            overflow: hidden;
-            transition: 0.2s ease-in-out;
-        }
-
-        .images-wrapper {
-            display: grid;
-            grid-template-columns: 1fr;
-            grid-template-rows: 1fr;
-            height: 60%;
-            align-items: center;
-            justify-items: center;
-        }
-
-        .image {
-            width: 80%;
-            height: 80%;
-            grid-column: 1/2;
-            grid-row: 1/2;
-            opacity: 0;
-            transition: opacity 0.3s, transform 0.5s;
+        
+        .glass-effect {
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4rem;
-            color: white;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-
-        .img-1 {
-            transform: translate(0, -50px);
-        }
-
-        .img-2 {
-            transform: scale(0.4, 0.5);
-        }
-
-        .img-3 {
-            transform: scale(0.3) rotate(-20deg);
-        }
-
-        .image.show {
-            opacity: 1;
-            transform: none;
-        }
-
-        .text-slider {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-
-        .text-wrap {
-            max-height: 2.2rem;
-            overflow: hidden;
-            margin-bottom: 2.5rem;
-        }
-
-        .text-group {
-            display: flex;
-            flex-direction: column;
-            text-align: center;
-            color: #ffffff;
-            transform: translateY(0);
-            transition: 0.5s;
-        }
-
-        .text-group h2 {
-            line-height: 2.2rem;
-            font-weight: 600;
-            font-size: 1.6rem;
-        }
-
-        .bullets {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .bullets span {
-            display: block;
-            width: 0.5rem;
-            height: 0.5rem;
-            background-color: rgba(255, 255, 255, 0.5);
-            margin: 0 0.25rem;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .bullets span.active {
-            width: 1.1rem;
-            background-color: #ffffff;
-            border-radius: 1rem;
-        }
-
-        /* Alert Messages */
-        .alert {
+        
+        /* Form transition fixes */
+        #sign-in-form, #sign-up-form {
             position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 24px;
-            border-radius: 8px;
-            z-index: 1000;
-            font-weight: 500;
-            animation: slideIn 0.3s ease-out;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
-
-        .alert-error {
-            background-color: #ef4444;
-            color: white;
+        
+        #sign-in-form {
+            z-index: 2;
         }
-
-        .alert-success {
-            background-color: #10b981;
-            color: white;
+        
+        #sign-up-form {
+            z-index: 1;
         }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
+        
+        #sign-in-form.opacity-0 {
+            z-index: 1;
+            visibility: hidden;
         }
-
-        @media (max-width: 850px) {
-            .box {
-                height: auto;
-                max-width: 550px;
-                overflow: hidden;
-            }
-
-            .inner-box {
-                position: static;
-                transform: none;
-                width: revert;
-                height: revert;
-                padding: 2rem;
-            }
-
-            .forms-wrap {
-                position: revert;
-                width: 100%;
-                height: auto;
-            }
-
-            form {
-                max-width: revert;
-                padding: 1.5rem 2.5rem 2rem;
-                transition: transform 0.8s ease-in-out, opacity 0.45s linear;
-            }
-
-            .heading {
-                margin: 2rem 0;
-            }
-
-            form.sign-up-form {
-                transform: translateX(100%);
-            }
-
-            main.sign-up-mode form.sign-in-form {
-                transform: translateX(-100%);
-            }
-
-            main.sign-up-mode form.sign-up-form {
-                transform: translateX(0%);
-            }
-
-            .carousel {
-                position: revert;
-                height: auto;
-                width: 100%;
-                padding: 3rem 2rem;
-                display: flex;
-            }
-
-            .images-wrapper {
-                display: none;
-            }
-
-            .text-slider {
-                width: 100%;
-            }
+        
+        #sign-up-form.opacity-100 {
+            z-index: 2;
+            visibility: visible;
         }
-
-        @media (max-width: 530px) {
-            main {
-                padding: 1rem;
-            }
-
-            .box {
-                border-radius: 2rem;
-            }
-
-            .inner-box {
-                padding: 1rem;
-            }
-
-            .carousel {
-                padding: 1.5rem 1rem;
-                border-radius: 1.6rem;
-            }
-
-            .text-wrap {
-                margin-bottom: 1rem;
-            }
-
-            .text-group h2 {
-                font-size: 1.2rem;
-            }
-
-            form {
-                padding: 1rem 2rem 1.5rem;
-            }
+        
+        .pointer-events-none {
+            pointer-events: none;
+            visibility: hidden;
         }
     </style>
 </head>
-<body>
+<body class="bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-600 min-h-screen">
     <!-- Alert Messages -->
     <% if(typeof error !== 'undefined' && error && error.length > 0){ %>
-        <div class="alert alert-error">
+        <div class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in">
             <%= error %>
         </div>
     <% } %>
     
     <% if(typeof success !== 'undefined' && success && success.length > 0){ %>
-        <div class="alert alert-success">
+        <div class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in">
             <%= success %>
         </div>
     <% } %>
 
-    <main>
-        <div class="box">
-            <div class="inner-box">
-                <div class="forms-wrap">
-                    <!-- Sign In Form -->
-                    <form action="/users/login" method="post" autocomplete="off" class="sign-in-form">
-                        <div class="logo">
-                            <h4>Welcome to <span class="brand-name">ATTEND TRACK</span></h4>
-                        </div>
-
-                        <div class="heading">
-                            <h2>Login</h2>
-                            <h6>Don't have an account?</h6>
-                            <a href="#" class="toggle">Register</a>
-                        </div>
-
-                        <div class="actual-form">
-                            <div class="input-wrap">
-                                <input type="email" name="email" class="input-field" autocomplete="off" required />
-                                <label>Email</label>
+    <main class="min-h-screen flex items-center justify-center p-4 overflow-hidden" id="main">
+        <div class="relative w-full max-w-6xl h-[700px] bg-white rounded-3xl shadow-2xl overflow-hidden">
+            <div class="absolute inset-4 w-[calc(100%-2rem)] h-[calc(100%-2rem)]">
+                
+                <!-- Forms Container -->
+                <div class="absolute h-full w-[45%] top-0 left-0 form-transition" id="forms-wrap">
+                    
+                    <div class="relative h-full w-full">
+                        <!-- Sign In Form -->
+                        <form action="/users/login" method="post" autocomplete="off" 
+                              class="max-w-sm w-full mx-auto h-full flex flex-col justify-center space-y-6 form-transition opacity-100 translate-x-0" 
+                              id="sign-in-form" style="visibility: visible;">
+                            
+                            <div class="text-center mb-8">
+                                <div class="flex items-center justify-center mb-4">
+                                    
+                                    <h4 class="text-xl font-bold text-slate-800">
+                                        Welcome to <span class="gradient-text">ATTEND TRACK</span>
+                                    </h4>
+                                </div>
                             </div>
 
-                            <div class="input-wrap">
-                                <input type="password" name="password" class="input-field" autocomplete="off" required />
-                                <label>Password</label>
+                            <div class="text-center mb-8">
+                                <h2 class="text-2xl font-bold text-slate-800 mb-2">Student Login</h2>
+                                <p class="text-slate-600 text-sm">
+                                    Don't have an account?
+                                    <a href="#" class="gradient-text font-semibold hover:underline transition-all duration-300 toggle-btn">
+                                        Register here
+                                    </a>
+                                </p>
                             </div>
 
-                            <input type="submit" value="Login" class="sign-btn" />
-                        </div>
-                    </form>
+                            <div class="space-y-6 w-full px-4">
+                                <div class="relative">
+                                    <input type="email" name="email" 
+                                           class="w-full h-14 px-4 bg-slate-50 border-2 border-slate-200 rounded-xl outline-none transition-all duration-300 input-focus peer" 
+                                           autocomplete="off" required />
+                                    <label class="absolute left-4 top-4 text-slate-500 transition-all duration-300 peer-focus:-top-2 peer-focus:left-2 peer-focus:text-xs peer-focus:text-indigo-600 peer-focus:bg-white peer-focus:px-2 peer-valid:-top-2 peer-valid:left-2 peer-valid:text-xs peer-valid:text-indigo-600 peer-valid:bg-white peer-valid:px-2">
+                                        📧 Email Address
+                                    </label>
+                                </div>
 
-                    <!-- Sign Up Form -->
-                    <form action="/users/register" method="post" autocomplete="off" class="sign-up-form">
-                        <div class="logo">
-                                <h4>Welcome to <span class="brand-name">ATTEND TRACK</span></h4>
-                        </div>
+                                <div class="relative">
+                                    <input type="password" name="password" 
+                                           class="w-full h-14 px-4 bg-slate-50 border-2 border-slate-200 rounded-xl outline-none transition-all duration-300 input-focus peer" 
+                                           autocomplete="off" required />
+                                    <label class="absolute left-4 top-4 text-slate-500 transition-all duration-300 peer-focus:-top-2 peer-focus:left-2 peer-focus:text-xs peer-focus:text-indigo-600 peer-focus:bg-white peer-focus:px-2 peer-valid:-top-2 peer-valid:left-2 peer-valid:text-xs peer-valid:text-indigo-600 peer-valid:bg-white peer-valid:px-2">
+                                        🔒 Password
+                                    </label>
+                                </div>
 
-                        <div class="heading">
-                            <h2>Register</h2>
-                            <h6>Already have an account?</h6>
-                            <a href="#" class="toggle">Login</a>
-                        </div>
-
-                        <div class="actual-form">
-                            <div class="input-wrap">
-                                <input type="text" name="name" class="input-field" autocomplete="off" required />
-                                <label>Full Name</label>
+                                <button type="submit" 
+                                        class="w-full h-12 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-600 hover:to-purple-700 transform hover:-translate-y-1 transition-all duration-300 shadow-lg hover:shadow-xl">
+                                    Sign In to Dashboard
+                                </button>
                             </div>
 
-                            <div class="input-wrap">
-                                <input type="email" name="email" class="input-field" autocomplete="off" required />
-                                <label>Email</label>
+                            <p class="text-center text-slate-500 text-sm">
+                                By signing in, you agree to our 
+                                <a href="#" class="gradient-text hover:underline">Terms of Service</a>
+                            </p>
+                        </form>
+
+                        <!-- Sign Up Form -->
+                        <form action="/users/register" method="post" autocomplete="off" 
+                              class="max-w-sm w-full mx-auto h-full flex flex-col justify-center space-y-6 form-transition opacity-0 translate-x-8 pointer-events-none" 
+                              id="sign-up-form" style="visibility: hidden;">
+                            
+                            <div class="text-center mb-8">
+                                <div class="flex items-center justify-center mb-4">
+                                  
+                                    <h4 class="text-xl font-bold text-slate-800">
+                                        Join <span class="gradient-text">ATTEND TRACK</span>
+                                    </h4>
+                                </div>
                             </div>
 
-                            <div class="input-wrap">
-                                <input type="password" name="password" class="input-field" autocomplete="off" required />
-                                <label>Password</label>
-                            </div>
-                            <div class="input-wrap">
-                                <input type="text" name="username" class="input-field" autocomplete="off" required />
-                                <label>Username</label>
+                            <div class="text-center mb-6">
+                                <h2 class="text-2xl font-bold text-slate-800 mb-2">Create Account</h2>
+                                <p class="text-slate-600 text-sm">
+                                    Already have an account?
+                                    <a href="#" class="gradient-text font-semibold hover:underline transition-all duration-300 toggle-btn">
+                                        Login here
+                                    </a>
+                                </p>
                             </div>
 
-                            <input type="submit" value="Create My Account" class="sign-btn" />
-                        </div>
-                    </form>
+                            <div class="space-y-4 w-full px-8">
+                                <div class="relative">
+                                    <input type="text" name="name" 
+                                           class="w-full h-12 px-4 bg-slate-50 border-2 border-slate-200 rounded-xl outline-none transition-all duration-300 input-focus peer" 
+                                           autocomplete="off" required />
+                                    <label class="absolute left-4 top-3 text-slate-500 transition-all duration-300 peer-focus:-top-2 peer-focus:left-2 peer-focus:text-xs peer-focus:text-indigo-600 peer-focus:bg-white peer-focus:px-2 peer-valid:-top-2 peer-valid:left-2 peer-valid:text-xs peer-valid:text-indigo-600 peer-valid:bg-white peer-valid:px-2">
+                                        👤 Full Name
+                                    </label>
+                                </div>
+
+                                <div class="relative">
+                                    <input type="email" name="email" 
+                                           class="w-full h-12 px-4 bg-slate-50 border-2 border-slate-200 rounded-xl outline-none transition-all duration-300 input-focus peer" 
+                                           autocomplete="off" required />
+                                    <label class="absolute left-4 top-3 text-slate-500 transition-all duration-300 peer-focus:-top-2 peer-focus:left-2 peer-focus:text-xs peer-focus:text-indigo-600 peer-focus:bg-white peer-focus:px-2 peer-valid:-top-2 peer-valid:left-2 peer-valid:text-xs peer-valid:text-indigo-600 peer-valid:bg-white peer-valid:px-2">
+                                        📧 Email Address
+                                    </label>
+                                </div>
+
+                                <div class="relative">
+                                    <input type="text" name="username" 
+                                           class="w-full h-12 px-4 bg-slate-50 border-2 border-slate-200 rounded-xl outline-none transition-all duration-300 input-focus peer" 
+                                           autocomplete="off" required />
+                                    <label class="absolute left-4 top-3 text-slate-500 transition-all duration-300 peer-focus:-top-2 peer-focus:left-2 peer-focus:text-xs peer-focus:text-indigo-600 peer-focus:bg-white peer-focus:px-2 peer-valid:-top-2 peer-valid:left-2 peer-valid:text-xs peer-valid:text-indigo-600 peer-valid:bg-white peer-valid:px-2">
+                                        🆔 Username
+                                    </label>
+                                </div>
+
+                                <div class="relative">
+                                    <input type="password" name="password" 
+                                           class="w-full h-12 px-4 bg-slate-50 border-2 border-slate-200 rounded-xl outline-none transition-all duration-300 input-focus peer" 
+                                           autocomplete="off" required />
+                                    <label class="absolute left-4 top-3 text-slate-500 transition-all duration-300 peer-focus:-top-2 peer-focus:left-2 peer-focus:text-xs peer-focus:text-indigo-600 peer-focus:bg-white peer-focus:px-2 peer-valid:-top-2 peer-valid:left-2 peer-valid:text-xs peer-valid:text-indigo-600 peer-valid:bg-white peer-valid:px-2">
+                                        🔒 Password
+                                    </label>
+                                </div>
+
+                                <button type="submit" 
+                                        class="w-full h-12 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-semibold rounded-xl hover:from-purple-600 hover:to-indigo-700 transform hover:-translate-y-1 transition-all duration-300 shadow-lg hover:shadow-xl">
+                                    Create Student Account
+                                </button>
+                            </div>
+
+                            <p class="text-center text-slate-500 text-sm">
+                                By creating an account, you agree to our 
+                                <a href="#" class="gradient-text hover:underline">Terms of Service</a>
+                            </p>
+                        </form>
+                    </div>
                 </div>
 
-                <div class="carousel">
-                    <div class="images-wrapper">
-                        <div class="image img-1 show">🛍️</div>
-                        <div class="image img-2">🎨</div>
-                        <div class="image img-3">✨</div>
+                <!-- Carousel -->
+                <div class="absolute h-full w-[55%] left-[45%] top-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 rounded-2xl carousel-transition overflow-hidden" 
+                     id="carousel">
+                    
+                    <div class="h-3/5 flex items-center justify-center relative">
+                        <div class="w-4/5 h-4/5 relative">
+                            <div class="absolute inset-0 glass-effect rounded-2xl flex items-center justify-center text-6xl transition-all duration-700 opacity-100 scale-100" 
+                                 id="img-1">
+                                🎓
+                            </div>
+                            <div class="absolute inset-0 glass-effect rounded-2xl flex items-center justify-center text-6xl transition-all duration-700 opacity-0 scale-75" 
+                                 id="img-2">
+                                📊
+                            </div>
+                            <div class="absolute inset-0 glass-effect rounded-2xl flex items-center justify-center text-6xl transition-all duration-700 opacity-0 scale-75" 
+                                 id="img-3">
+                                🏆
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="text-slider">
-                        <div class="text-wrap">
-                            <div class="text-group">
-                                <h2>Welcome to ATTEND TRACK</h2>
-                                <h2>Track Your Attendance</h2>
-                                <h2>Start Your Journey Today</h2>
+                    <div class="h-2/5 flex flex-col items-center justify-center px-8">
+                        <div class="h-20 overflow-hidden mb-8">
+                            <div class="flex flex-col text-center text-white transition-transform duration-700" 
+                                 id="text-group">
+                                <h2 class="text-2xl font-bold h-20 flex items-center justify-center">Track Your Academic Journey</h2>
+                                <h2 class="text-2xl font-bold h-20 flex items-center justify-center">Monitor Your Progress</h2>
+                                <h2 class="text-2xl font-bold h-20 flex items-center justify-center">Achieve Excellence</h2>
                             </div>
                         </div>
 
-                        <div class="bullets">
-                            <span class="active" data-value="1"></span>
-                            <span data-value="2"></span>
-                            <span data-value="3"></span>
+                        <div class="flex space-x-3">
+                            <span class="w-3 h-3 bg-white rounded-full transition-all duration-300 cursor-pointer opacity-100" 
+                                  data-value="1" id="bullet-1"></span>
+                            <span class="w-2 h-2 bg-white bg-opacity-50 rounded-full transition-all duration-300 cursor-pointer" 
+                                  data-value="2" id="bullet-2"></span>
+                            <span class="w-2 h-2 bg-white bg-opacity-50 rounded-full transition-all duration-300 cursor-pointer" 
+                                  data-value="3" id="bullet-3"></span>
                         </div>
                     </div>
                 </div>
@@ -564,56 +297,128 @@
     </main>
 
     <script>
-        const inputs = document.querySelectorAll(".input-field");
-        const toggle_btn = document.querySelectorAll(".toggle");
-        const main = document.querySelector("main");
-        const bullets = document.querySelectorAll(".bullets span");
-        const images = document.querySelectorAll(".image");
+        // Form toggle functionality
+        const toggleBtns = document.querySelectorAll('.toggle-btn');
+        const main = document.getElementById('main');
+        const formsWrap = document.getElementById('forms-wrap');
+        const carousel = document.getElementById('carousel');
+        const signInForm = document.getElementById('sign-in-form');
+        const signUpForm = document.getElementById('sign-up-form');
 
-        inputs.forEach((inp) => {
-            inp.addEventListener("focus", () => {
-                inp.classList.add("active");
-            });
-            inp.addEventListener("blur", () => {
-                if (inp.value != "") return;
-                inp.classList.remove("active");
-            });
-        });
-
-        toggle_btn.forEach((btn) => {
-            btn.addEventListener("click", (e) => {
+        toggleBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
                 e.preventDefault();
-                main.classList.toggle("sign-up-mode");
+                
+                if (main.classList.contains('sign-up-mode')) {
+                    // Switch to sign-in mode
+                    main.classList.remove('sign-up-mode');
+                    formsWrap.style.left = '0%';
+                    carousel.style.left = '45%';
+                    
+                    // First make sign-up form invisible
+                    signUpForm.style.visibility = 'hidden';
+                    signUpForm.classList.add('opacity-0', 'translate-x-8', 'pointer-events-none');
+                    
+                    // Wait for the transition to complete before showing sign-in form
+                    setTimeout(() => {
+                        signInForm.style.visibility = 'visible';
+                        signInForm.classList.remove('opacity-0', '-translate-x-8', 'pointer-events-none');
+                        signInForm.classList.add('opacity-100', 'translate-x-0');
+                    }, 500);
+                } else {
+                    // Switch to sign-up mode
+                    main.classList.add('sign-up-mode');
+                    formsWrap.style.left = '55%';
+                    carousel.style.left = '0%';
+                    
+                    // First make sign-in form invisible
+                    signInForm.style.visibility = 'hidden';
+                    signInForm.classList.add('opacity-0', '-translate-x-8', 'pointer-events-none');
+                    
+                    // Wait for the transition to complete before showing sign-up form
+                    setTimeout(() => {
+                        signUpForm.style.visibility = 'visible';
+                        signUpForm.classList.remove('opacity-0', 'translate-x-8', 'pointer-events-none');
+                        signUpForm.classList.add('opacity-100', 'translate-x-0');
+                    }, 500);
+                }
             });
         });
 
-        function moveSlider() {
-            let index = this.dataset.value;
+        // Carousel functionality
+        const bullets = document.querySelectorAll('[data-value]');
+        const images = [
+            document.getElementById('img-1'),
+            document.getElementById('img-2'),
+            document.getElementById('img-3')
+        ];
+        const textGroup = document.getElementById('text-group');
 
-            let currentImage = document.querySelector(`.img-${index}`);
-            images.forEach((img) => img.classList.remove("show"));
-            currentImage.classList.add("show");
+        function moveSlider(index) {
+            // Update images
+            images.forEach((img, i) => {
+                if (i === index - 1) {
+                    img.classList.remove('opacity-0', 'scale-75');
+                    img.classList.add('opacity-100', 'scale-100');
+                } else {
+                    img.classList.add('opacity-0', 'scale-75');
+                    img.classList.remove('opacity-100', 'scale-100');
+                }
+            });
 
-            const textSlider = document.querySelector(".text-group");
-            textSlider.style.transform = `translateY(${-(index - 1) * 2.2}rem)`;
+            // Update text
+            textGroup.style.transform = `translateY(${-(index - 1) * 5}rem)`;
 
-            bullets.forEach((bull) => bull.classList.remove("active"));
-            this.classList.add("active");
+            // Update bullets
+            bullets.forEach((bullet, i) => {
+                if (i === index - 1) {
+                    bullet.classList.remove('w-2', 'h-2', 'bg-opacity-50');
+                    bullet.classList.add('w-3', 'h-3', 'opacity-100');
+                } else {
+                    bullet.classList.add('w-2', 'h-2', 'bg-opacity-50');
+                    bullet.classList.remove('w-3', 'h-3', 'opacity-100');
+                }
+            });
         }
 
         bullets.forEach((bullet) => {
-            bullet.addEventListener("click", moveSlider);
+            bullet.addEventListener('click', function() {
+                const index = parseInt(this.dataset.value);
+                moveSlider(index);
+            });
         });
 
         // Auto-slide functionality
         let currentSlide = 1;
         setInterval(() => {
             currentSlide = currentSlide >= 3 ? 1 : currentSlide + 1;
-            const bullet = document.querySelector(`[data-value="${currentSlide}"]`);
-            if (bullet) {
-                bullet.click();
-            }
+            moveSlider(currentSlide);
         }, 4000);
+
+        // Input field focus handling
+        const inputs = document.querySelectorAll('input[type="email"], input[type="password"], input[type="text"]');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.classList.add('focused');
+            });
+            
+            input.addEventListener('blur', () => {
+                if (input.value === '') {
+                    input.parentElement.classList.remove('focused');
+                }
+            });
+            
+            // Check if input has value on page load
+            if (input.value !== '') {
+                input.parentElement.classList.add('focused');
+            }
+        });
+        
+        // Ensure proper initial form visibility
+        document.addEventListener('DOMContentLoaded', () => {
+            signInForm.style.visibility = 'visible';
+            signUpForm.style.visibility = 'hidden';
+        });
     </script>
 </body>
 </html>

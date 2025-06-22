@@ -1,14 +1,7 @@
 <%- include('navbar') %>    
-<body class="bg-slate-50 text-slate-700 font-sans leading-relaxed min-h-screen md:ml-64 sm:ml-0">
+<div class="bg-slate-50 text-slate-700 font-sans leading-relaxed min-h-screen md:ml-64 sm:ml-0 main-content">
     <div class="max-w-5xl mx-auto p-6">
-        <!-- Mobile Menu Toggle (only visible on small screens) -->
-        <div class="sm:block md:hidden mb-4">
-            <button id="mobile-menu-toggle" class="p-2 rounded-md bg-white shadow">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-                </svg>
-            </button>
-        </div>
+        <!-- Mobile Menu Toggle removed as it's now in the navbar -->
 
         <!-- Header -->
         <div class="flex items-center gap-3 mb-8">
@@ -162,47 +155,16 @@
                     }
                 });
             }
-
-            // Mobile menu toggle functionality
-            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-            if (mobileMenuToggle) {
-                mobileMenuToggle.addEventListener('click', function() {
-                    const sidebar = document.querySelector('nav');
-                    
-                    if (sidebar.classList.contains('hidden-mobile')) {
-                        sidebar.classList.remove('hidden-mobile');
-                        sidebar.classList.add('block-mobile');
-                    } else {
-                        sidebar.classList.add('hidden-mobile');
-                        sidebar.classList.remove('block-mobile');
-                    }
-                });
-            }
         });
     </script>
 
     <style>
     /* Mobile responsiveness */
     @media (max-width: 768px) {
-        .ml-64 {
-            margin-left: 0;
-        }
-        
-        nav {
-            display: none;
-        }
-        
-        nav.block-mobile {
-            display: block;
-            position: fixed;
-            z-index: 50;
-            width: 100%;
-            height: 100%;
-        }
-        
-        nav.hidden-mobile {
-            display: none;
+        /* Grid layout for smaller screens */
+        .lg\:grid-cols-2 {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
         }
     }
     </style>
-</body>
+</div>

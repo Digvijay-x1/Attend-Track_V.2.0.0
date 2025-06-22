@@ -1,20 +1,18 @@
 <%- include('navbar') %>    
 
-<div class="ml-64 p-8 bg-gray-50 min-h-screen md:ml-64 sm:ml-0">
+<div class="ml-64 p-8 bg-gray-50 min-h-screen main-content md:ml-64 sm:ml-0">
     <div class="max-w-7xl mx-auto">
-        <!-- Mobile Menu Toggle (only visible on small screens) -->
-        <div class="sm:block md:hidden mb-4">
-            <button id="mobile-menu-toggle" class="p-2 rounded-md bg-white shadow">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+        <!-- Dashboard Header with improved spacing and icon -->
+        <div class="flex items-center gap-3 mb-8 mt-6 pt-4">
+            <div class="bg-blue-100 p-2 rounded-lg">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
-            </button>
-        </div>
-
-        <!-- Dashboard Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-800">Dashboard</h1>
-            <p class="text-gray-600 mt-2">Track your attendance across all subjects and stay on top of your goals</p>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">Dashboard</h1>
+                <p class="text-gray-600 mt-1">Track your attendance across all subjects and stay on top of your goals</p>
+            </div>
         </div>
 
         <!-- Stat Cards -->
@@ -124,24 +122,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', async function() {
     let dashboardData = null;
-
-    // Mobile menu toggle functionality
-    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-    if (mobileMenuToggle) {
-        mobileMenuToggle.addEventListener('click', function() {
-            const sidebar = document.querySelector('nav');
-            const mainContent = document.querySelector('.ml-64');
-            
-            if (sidebar.classList.contains('hidden-mobile')) {
-                sidebar.classList.remove('hidden-mobile');
-                sidebar.classList.add('block-mobile');
-            } else {
-                sidebar.classList.add('hidden-mobile');
-                sidebar.classList.remove('block-mobile');
-            }
-        });
-    }
-
+    
     // Fetch attendance data
     try {
         const response = await fetch('/api/dashboard-data');

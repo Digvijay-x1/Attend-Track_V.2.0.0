@@ -1,29 +1,18 @@
 <%- include('navbar') %>    
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Attendance Input</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-
-</head>
-<body class="bg-gray-50 min-h-screen p-6 md:ml-64 sm:ml-0">
-    <div class="max-w-6xl mx-auto main-container">
-        <!-- Mobile Menu Toggle (only visible on small screens) -->
-        <div class="sm:block md:hidden mb-4">
-            <button id="mobile-menu-toggle" class="p-2 rounded-md bg-white shadow">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+<div class="bg-gray-50 min-h-screen p-6 md:ml-64 sm:ml-0 main-content">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header with improved spacing and icon -->
+        <div class="flex items-center gap-3 mb-8 mt-6 pt-4">
+            <div class="bg-green-100 p-2 rounded-lg">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-            </button>
-        </div>
-
-        <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-4xl font-bold text-gray-900 mb-2">Attendance Input</h1>
-            <p class="text-gray-600">Record your class attendance quickly and easily</p>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Attendance Input</h1>
+                <p class="text-gray-600 mt-1">Record your class attendance quickly and easily</p>
+            </div>
         </div>
 
         <!-- Action Cards -->
@@ -262,22 +251,6 @@
                     }
                 });
             });
-
-            // Mobile menu toggle functionality
-            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-            if (mobileMenuToggle) {
-                mobileMenuToggle.addEventListener('click', function() {
-                    const sidebar = document.querySelector('nav');
-                    
-                    if (sidebar.classList.contains('hidden-mobile')) {
-                        sidebar.classList.remove('hidden-mobile');
-                        sidebar.classList.add('block-mobile');
-                    } else {
-                        sidebar.classList.add('hidden-mobile');
-                        sidebar.classList.remove('block-mobile');
-                    }
-                });
-            }
         });
         
         // Function to update the recent attendance section
@@ -331,5 +304,4 @@
             }
         }
     </style>
-</body>
-</html>
+</div>

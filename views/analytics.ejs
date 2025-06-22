@@ -1,22 +1,20 @@
 <%- include('navbar') %>    
 
-<body class="bg-gray-50 min-h-screen md:ml-64 sm:ml-0">
+<div class="bg-gray-50 min-h-screen main-content md:ml-64 sm:ml-0">
     <div class="max-w-7xl mx-auto p-6">
-        <!-- Mobile Menu Toggle (only visible on small screens) -->
-        <div class="sm:block md:hidden mb-4">
-            <button id="mobile-menu-toggle" class="p-2 rounded-md bg-white shadow">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+        <!-- Header with improved spacing and icon -->
+        <div class="flex items-center gap-3 mb-8 mt-6 pt-4">
+            <div class="bg-indigo-100 p-2 rounded-lg">
+                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                 </svg>
-            </button>
-        </div>
-
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">Analytics</h1>
-            <div class="flex items-center gap-4">
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Analytics</h1>
+                <p class="text-gray-600 mt-1">Track and analyze your attendance patterns</p>
+            </div>
+            <div class="flex items-center gap-4 ml-auto">
                 <span class="text-sm text-gray-600">This Semester</span>
-                
             </div>
         </div>
 
@@ -89,13 +87,16 @@
                 </div>
             </div>
 
-            <!-- Best Subject -->
+            <!-- Best Subject - Fixed Structure -->
             <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
                 <div class="flex items-center justify-between mb-2">
                     <div>
-                    <h3 class="text-sm font-medium text-gray-600">Best Subject</h3>
-                    <% if (bestCourse) { %>
-                        <div class="text-lg font-bold text-purple-600 mb-1"><%= bestCourse.title %></div>
+                        <h3 class="text-sm font-medium text-gray-600">Best Subject</h3>
+                        <% if (typeof bestCourse !== 'undefined' && bestCourse) { %>
+                            <div class="text-lg font-bold text-purple-600 mb-1"><%= bestCourse.title %></div>
+                        <% } else { %>
+                            <div class="text-lg font-bold text-gray-400 mb-1">No data</div>
+                        <% } %>
                     </div>
                     <div class="w-11 h-11 bg-purple-100 rounded-lg flex items-center justify-center">
                         <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -103,8 +104,10 @@
                         </svg>
                     </div>
                 </div>
- 
+                <% if (typeof bestAttendanceRate !== 'undefined' && bestCourse) { %>
                     <div class="text-sm text-gray-500"><%= bestAttendanceRate %>% attendance</div>
+                <% } else { %>
+                    <div class="text-sm text-gray-500">No attendance data</div>
                 <% } %>
             </div>
         </div>
@@ -182,31 +185,11 @@
             </div>
         </div>
     </div>
-</body>
+</div>
 
 <style>
 /* Mobile responsiveness */
 @media (max-width: 768px) {
-    .ml-64 {
-        margin-left: 0;
-    }
-    
-    nav {
-        display: none;
-    }
-    
-    nav.block-mobile {
-        display: block;
-        position: fixed;
-        z-index: 50;
-        width: 100%;
-        height: 100%;
-    }
-    
-    nav.hidden-mobile {
-        display: none;
-    }
-    
     /* Make table responsive */
     .grid-cols-6 {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -218,22 +201,4 @@
 }
 </style>
 
-<script>
-    // Mobile menu toggle functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-        if (mobileMenuToggle) {
-            mobileMenuToggle.addEventListener('click', function() {
-                const sidebar = document.querySelector('nav');
-                
-                if (sidebar.classList.contains('hidden-mobile')) {
-                    sidebar.classList.remove('hidden-mobile');
-                    sidebar.classList.add('block-mobile');
-                } else {
-                    sidebar.classList.add('hidden-mobile');
-                    sidebar.classList.remove('block-mobile');
-                }
-            });
-        }
-    });
-</script>
+<!-- Mobile menu toggle script is no longer needed as it's handled in navbar.ejs -->
